@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3918a4215c347a40898048e3155b4b1, type: 3}
+  m_Name: ProductBox
+  m_EditorClassIdentifier: 
+  Objs:
+  - {fileID: 203340775971786751, guid: 2c3464d703f0cca4b9de2692b593fb04, type: 3}
+  - {fileID: 865740199995641619, guid: 357810c769d5bc34c875f29d6d036cd9, type: 3}
+  - {fileID: 2823759398460462504, guid: d9049dc9b62d9e145a192fb546f8a399, type: 3}
+  - {fileID: 1395510368006154015, guid: 3e3f0f3ee38f2ec44b04d83c654b7de1, type: 3}
+  - {fileID: 7940331160530313432, guid: bb361e8d69403f24fb417925a8f0cb5b, type: 3}
+  - {fileID: 3579643846223338656, guid: daad2194ca777254da042fcab1cd71a4, type: 3}
+  - {fileID: 249178233718528366, guid: 9deead2acbbd95847866904bb61a2114, type: 3}

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e90c2676c2f2be54898dc8aa11664d59, type: 3}
+  m_Name: OrderItem
+  m_EditorClassIdentifier: 
+  OrderItemName:
+  - Cola
+  itemPrefab:
+  - {fileID: 9076155058887306919, guid: 0d5277544015e9845a9f060bbe662506, type: 3}
+  - {fileID: 9045971557249164563, guid: 4cceb0ca7dd96cb4494f205254ad3751, type: 3}
+  - {fileID: 4341376087843163258, guid: c12564c900aeb514bb4d0f7abbbf2a46, type: 3}
+  - {fileID: 6319687831339718088, guid: 1887f69ac70d67048bc3d02e8b4b0f5e, type: 3}
+  - {fileID: 5810905127386652838, guid: 1dc6f8652f34b7f4998aff702b220805, type: 3}
+  - {fileID: 1268015370339040111, guid: e4bfd560e6e89724b8b2da5e1d32b411, type: 3}
+  - {fileID: 5623362660542549103, guid: 4c337fd9809ab574e93ca8d005a032fc, type: 3}
+  itemSprite: {fileID: 2814702879787398126, guid: f256233660f358e42b87b46c6c3121c9,
+    type: 3}
+  itemSpriteUI:
+  - {fileID: 21300000, guid: 494c1acc58fd2d6448e6b59b4b759506, type: 3}
+  - {fileID: 21300000, guid: f4fc6428be33b9343873ee7a04a4507d, type: 3}
