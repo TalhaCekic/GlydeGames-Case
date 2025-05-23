@@ -47,8 +47,6 @@ namespace Player.PlayerControl
         [SerializeField] Transform HeadTarget, HeadLook;
         float kafaAci = 90;
 
-        public Volume GlobalVolume;
-        public Vignette vignette;
 
         [SyncVar] public bool isCollisionItemDec;
         [SyncVar] public float CollisionDelay;
@@ -60,9 +58,6 @@ namespace Player.PlayerControl
             Camera.main.transform.SetParent(transform);
             Camera.main.transform.position = CameraRoot.position;
 
-            GameObject volume = GameObject.Find("Global Volume");
-            GlobalVolume = volume.GetComponent<Volume>();
-            GlobalVolume = FindObjectOfType<Volume>();
         }
 
         [ClientRpc]
@@ -118,22 +113,18 @@ namespace Player.PlayerControl
 
             if (isLocalPlayer)
             {
-                if (playerInteract.mouseActivity)
-                {
-                    _currentVelocity.x = 0;
-                    _currentVelocity.y = 0;
 
-                    _animator.SetFloat(_yVelHash, _currentVelocity.y);
-                    _animator.SetFloat(_xVelHash, _currentVelocity.x);
-                }
-                else
-                {
-                    SampleGround();
-                    move();
-                    HandleJump();
-                    //HandleCrouch();
-                    CamMovements();
-                }
+                //_currentVelocity.x = 0;
+                //_currentVelocity.y = 0;
+
+                //_animator.SetFloat(_yVelHash, _currentVelocity.y);
+                //_animator.SetFloat(_xVelHash, _currentVelocity.x);
+                SampleGround();
+                move();
+                HandleJump();
+                //HandleCrouch();
+                CamMovements();
+
             }
         }
 
@@ -142,7 +133,7 @@ namespace Player.PlayerControl
         {
             if (CollisionDelay > 1)
             {
-                RpcCollisionOpen(0f);
+                //RpcCollisionOpen(0f);
                 if (CollisionDelay > 2)
                 {
                     CollisionDelay = 0;
@@ -155,24 +146,12 @@ namespace Player.PlayerControl
             }
             else
             {
-                RpcCollisionOpen(0.5f);
+                //RpcCollisionOpen(0.5f);
                 CollisionDelay += Time.deltaTime;
             }
         }
 
-        [TargetRpc]
-        private void RpcCollisionOpen(float targetIntensity)
-        {
-            if (GlobalVolume.profile.TryGet(out vignette))
-            {
-                float currentIntensity = vignette.intensity.value; 
-                float lerpSpeed = 8f;  
 
-                vignette.intensity.value = Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime * lerpSpeed);
-
-                vignette.intensity.value = Mathf.Clamp01(vignette.intensity.value);
-            }
-        }
 
         private void move()
         {
@@ -201,6 +180,7 @@ namespace Player.PlayerControl
             CharacterController.Move(move * targetSpeed);
             _animator.SetFloat(_xVelHash, _currentVelocity.z * AnimBlendSpeed);
             _animator.SetFloat(_yVelHash, _currentVelocity.x * AnimBlendSpeed);
+            print(_currentVelocity);
         }
 
 

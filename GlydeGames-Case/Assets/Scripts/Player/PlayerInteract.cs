@@ -113,21 +113,7 @@ public class PlayerInteract : NetworkBehaviour
     private void Update()
     {
         if (SceneManager.GetActiveScene().buildIndex == 0) return;
-        if (InGameHud.instance.isStatistic)
-        {
-            mouseActivity = true;
-            //InGameHud.instance.ServerCross(true);
-        }
-
-        if (itemBoxes.Count != 0)
-            foreach (ItemBox box in itemBoxes)
-            {
-                box.ServerAddAmount();
-                //isChangeValue = true;
-            }
-
-        if (!isVehicle) return;
-        //RpcEnterVehicle();
+       
     }
 
     [ClientRpc]

@@ -132,23 +132,17 @@ namespace Player.Manager
 			Interact = context.ReadValueAsButton();
 
 			if (!isLocalPlayer) return;
-			playerInteract.ServerInteract();
 		}
 		private void onDrop(InputAction.CallbackContext context) {
 			Drop = context.ReadValueAsButton();
 
 			if (!isLocalPlayer) return;
-			playerInteract.DropedInteract();
 		}
 
 		private void onMouse0Click(InputAction.CallbackContext context) {
 			Mouse0Click = context.ReadValueAsButton();
 
 			if (!isLocalPlayer) return;
-			if (!playerInteract.mouseActivity)
-			{
-				playerInteract.BoxInteractShelftoBoxHold();
-			}
 		}	
 		private void onMouse0ClickCanceled(InputAction.CallbackContext context) {
 			Mouse0Click = context.ReadValueAsButton();
@@ -164,7 +158,6 @@ namespace Player.Manager
 			Throw = context.ReadValueAsButton();
 
 			if (!isLocalPlayer) return;
-			playerInteract.Throw();
 		}
 
 		private void onPause(InputAction.CallbackContext context) {
@@ -172,7 +165,7 @@ namespace Player.Manager
 
 			if (!isLocalPlayer) return;
 			_playerMenuManager.isPause = !_playerMenuManager.isPause;
-			playerInteract.Interact();
+			
 			_playerMenuManager.OnPauseSelect();
 
 		}

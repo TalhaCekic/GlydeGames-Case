@@ -20,8 +20,8 @@ namespace Player.PlayerMenu
         private Button _restartButton;
         private Button _settingsButtom;
         private Button _mainMenuButton;
-        
 
+        bool mouseActivity;
         public override void OnStartServer()
         {
             if(!isLocalPlayer)return;
@@ -68,7 +68,7 @@ namespace Player.PlayerMenu
        {
            if (SceneManager.GetActiveScene().buildIndex == 0)
            {
-               _playerInteract.mouseActivity = false;
+               mouseActivity = false;
                _bgElemet.style.display = DisplayStyle.None;
                Cursor.lockState = CursorLockMode.None;
                Cursor.visible = true;
@@ -77,14 +77,14 @@ namespace Player.PlayerMenu
            {
                if (isPause)
                {
-                   _playerInteract.mouseActivity = true;
+                   mouseActivity = true;
                    _bgElemet.style.display = DisplayStyle.Flex;
                    Cursor.lockState = CursorLockMode.None;
                    Cursor.visible = true;
                }
                else
                {
-                   _playerInteract.mouseActivity = false;
+                   mouseActivity = false;
                    _bgElemet.style.display = DisplayStyle.None;
                    Cursor.visible = false;
                    Cursor.lockState = CursorLockMode.Locked;
@@ -102,18 +102,18 @@ namespace Player.PlayerMenu
         [TargetRpc]
         private void CursorState()
         {
-            _playerInteract = GetComponent<PlayerInteract>();
-            if (_playerInteract.mouseActivity)
+            //_playerInteract = GetComponent<PlayerInteract>();
+            if (mouseActivity)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
-                InGameHud.instance.RpcCross(true);
+                //InGameHud.instance.RpcCross(true);
             }
             else
             {
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
-                InGameHud.instance.RpcCross(false);
+                //InGameHud.instance.RpcCross(false);
             }
         }
 

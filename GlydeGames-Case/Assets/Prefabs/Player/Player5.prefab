@@ -1176,9 +1176,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2527150307355559623}
-  - component: {fileID: 9204197260794096097}
   - component: {fileID: 4833260741395693962}
-  - component: {fileID: 2226695055184230262}
   - component: {fileID: 3494786372227598913}
   - component: {fileID: 1465339289132656469}
   - component: {fileID: 7990157311863282200}
@@ -1190,9 +1188,6 @@ GameObject:
   - component: {fileID: 8968193831207124701}
   - component: {fileID: 1336061448818776845}
   - component: {fileID: 1762429134933752759}
-  - component: {fileID: 165561115366039473}
-  - component: {fileID: 8843430258737130718}
-  - component: {fileID: 23112644115804089}
   - component: {fileID: 9124760317859460182}
   - component: {fileID: -3020824275602947310}
   - component: {fileID: 4341876723532433999}
@@ -1232,46 +1227,6 @@ Transform:
   - {fileID: 82921511341869587}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9204197260794096097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2266451415077493300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6921be4c328fe0540a93dc205b940a7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  HitPointInteract: {fileID: 4758036160956343789}
-  anims: {fileID: 1465339289132656469}
-  cam: {fileID: 0}
-  _PlayerMenuManager: {fileID: 1640328272136123631}
-  offset: {x: 0, y: 0, z: 0}
-  yOffset: 10
-  hitRange: 2
-  handFull: 0
-  mouseActivity: 0
-  InteractObj: {fileID: 0}
-  HandObj: {fileID: 0}
-  InteractPos: {fileID: 4503816913377678027}
-  InteractPosBox: {fileID: 4503816913377678027}
-  InteractPosItem: {fileID: 4682424547417030303}
-  InteractPosBrush: {fileID: 4430804364789810876}
-  isHandRightTrue: 0
-  rigBuilder: {fileID: 1762429134933752759}
-  HandTargetRight: {fileID: 4608406540416036664}
-  HandLookRight: {fileID: 227913316587629861}
-  HandTargetLeft: {fileID: 7936053872215227399}
-  HandLookLeft: {fileID: 2510605111944784369}
-  itemBoxes: []
-  car: {fileID: 0}
-  isDrive: 0
-  isVehicle: 0
 --- !u!114 &4833260741395693962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1303,31 +1258,12 @@ MonoBehaviour:
   AirResistance: 0.4
   _playerRigidbody: {fileID: 0}
   _animator: {fileID: 1465339289132656469}
-  playerInteract: {fileID: 9204197260794096097}
+  playerInteract: {fileID: 0}
   playerMenuManager: {fileID: 1640328272136123631}
   HeadTarget: {fileID: 6806981326514948813}
   HeadLook: {fileID: 1678906601617560898}
-  GlobalVolume: {fileID: 0}
-  vignette: {fileID: 0}
   isCollisionItemDec: 0
   CollisionDelay: 0
---- !u!114 &2226695055184230262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2266451415077493300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e139faa1da2a804ab395403e4901c34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  data: {fileID: 11400000, guid: 5d40e3803353603458d3ffcf4866ec12, type: 2}
-  spawnPos: {fileID: 5473026409206320017}
 --- !u!114 &3494786372227598913
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1607,69 +1543,6 @@ MonoBehaviour:
   - m_Rig: {fileID: 2914561346081234129}
     m_Active: 0
   m_Effectors: []
---- !u!114 &165561115366039473
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2266451415077493300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1257f21fdc50b34f92de92d91f61f8e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  data: {fileID: 11400000, guid: 5d40e3803353603458d3ffcf4866ec12, type: 2}
-  _document: {fileID: 0}
-  hitRange: 2
---- !u!114 &8843430258737130718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2266451415077493300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae6670aa8025e2748a193aa339bce9d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  RegisterItem: {fileID: 0}
-  _document: {fileID: 0}
-  DrinksCardAmount: 0
-  SnacksCardAmount: 0
-  MealsCardAmount: 0
-  Template: {fileID: 9197481963319205126, guid: 7b99224750cf59b4ea44b1da462ad08a,
-    type: 3}
---- !u!114 &23112644115804089
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2266451415077493300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68a69c803a4c8b6438f5c27dcc4cbc53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  _ProductItem: {fileID: 0}
-  _LaptopInteract: {fileID: 0}
-  _LearnRecipeManager: {fileID: 0}
-  _document: {fileID: 0}
-  OrderCardAmount: 0
-  LearnCardAmount: 0
-  Template: {fileID: 9197481963319205126, guid: 540272ac6dd753c43965f85642baaf54,
-    type: 3}
 --- !u!143 &9124760317859460182
 CharacterController:
   m_ObjectHideFlags: 0
