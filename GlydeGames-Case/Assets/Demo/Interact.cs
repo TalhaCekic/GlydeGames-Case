@@ -38,12 +38,7 @@ public class Interact : NetworkBehaviour
 
         if (Input.GetMouseButton(0) && selectedRigidbody != null)
         {
-            print("Selected Rigidbody: " + selectedRigidbody.name);
-            selectedRigidbody.MovePosition(Vector3.Lerp(
-                selectedRigidbody.position,
-                holdPoint.position,
-                moveSpeed * Time.deltaTime
-            ));
+            CmdMoveObject();
         }
 
         if (Input.GetMouseButtonUp(0) && selectedRigidbody != null)
@@ -56,7 +51,21 @@ public class Interact : NetworkBehaviour
             CmdThrowObject(Camera.main.transform.forward);
         }
     }
+    [Command]
+    private void CmdMoveObject()
+    {
+        RpcMoveObject();
+    }
 
+    [ClientRpc]
+    private void RpcMoveObject()
+    {
+        selectedRigidbody.MovePosition(Vector3.Lerp(
+                   selectedRigidbody.position,
+                   holdPoint.position,
+                   moveSpeed * Time.deltaTime
+               ));
+    }
     [Command]
     private void CmdSelectObject(uint netId)
     {
