@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 19101, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: PcCanvaPanel
   m_EditorClassIdentifier: 
-  themeUss: {fileID: -4733365628477956816, guid: 888f5d4c70c64c84fbb5a299b79e20b4, type: 3}
+  themeUss: {fileID: -4733365628477956816, guid: 888f5d4c70c64c84fbb5a299b79e20b4,
+    type: 3}
   m_TargetTexture: {fileID: 8400000, guid: 18c62157b8eac4244a6556432d95012f, type: 2}
   m_ScaleMode: 2
   m_ReferenceSpritePixelsPerUnit: 100
