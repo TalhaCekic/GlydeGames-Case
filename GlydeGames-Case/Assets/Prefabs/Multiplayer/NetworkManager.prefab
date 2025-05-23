@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 3714840857737582581}
   - component: {fileID: -7153834693852871851}
   - component: {fileID: 81666691641678286}
-  - component: {fileID: 3726177492410385574}
   - component: {fileID: 8684392366527850784}
   m_Layer: 0
   m_Name: NetworkManager
@@ -51,9 +50,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
   runInBackground: 1
-  autoStartServerBuild: 1
+  headlessStartMode: 1
+  editorAutoStart: 0
+  sendRate: 128
+  autoStartServerBuild: 0
   autoConnectClientBuild: 0
-  sendRate: 30
   offlineScene: 
   onlineScene: 
   transport: {fileID: -7153834693852871851}
@@ -62,39 +63,55 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 2266451415077493300, guid: 7147bc64ff7b711468d55415be55dcc0,
+  playerPrefab: {fileID: 2266451415077493300, guid: dfd7703de664a86419786cde6922f3b2,
     type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
-  - {fileID: 931885790806214573, guid: bfa378385f209fe45a99a4b2144fd072, type: 3}
-  - {fileID: 9198152009780532272, guid: 34f90f5c467689948ac930861e83d440, type: 3}
+  - {fileID: 7825085059333585633, guid: c7f0a08978901ba4590dbb76028af03f, type: 3}
+  - {fileID: 5582149471819252227, guid: 63b2508824d6ddc4186dc0738cb3deee, type: 3}
+  - {fileID: 6441351726370273240, guid: a6673faf34d7ab749a0287a58e6e81a5, type: 3}
+  - {fileID: 203340775971786751, guid: 707316f3920e78b4aa8333b8ff3ba598, type: 3}
   - {fileID: 1119238487230810325, guid: 94af409f3a05927438d4638659fa8326, type: 3}
-  - {fileID: 1621237590031416257, guid: 0fd6c2ad8b315c9488d4c6a57ecaf283, type: 3}
   - {fileID: 6312007748669033270, guid: 26f3943b893c55e4e97b5070aeadd53b, type: 3}
-  - {fileID: 203340775971786751, guid: 2c3464d703f0cca4b9de2692b593fb04, type: 3}
-  - {fileID: 865740199995641619, guid: 357810c769d5bc34c875f29d6d036cd9, type: 3}
-  - {fileID: 1395510368006154015, guid: 3e3f0f3ee38f2ec44b04d83c654b7de1, type: 3}
-  - {fileID: 2823759398460462504, guid: d9049dc9b62d9e145a192fb546f8a399, type: 3}
-  - {fileID: 7940331160530313432, guid: bb361e8d69403f24fb417925a8f0cb5b, type: 3}
-  - {fileID: 3579643846223338656, guid: daad2194ca777254da042fcab1cd71a4, type: 3}
-  - {fileID: 249178233718528366, guid: 9deead2acbbd95847866904bb61a2114, type: 3}
+  - {fileID: 5280004541180584814, guid: ab1ee251a594f774a8f910f21f319b0f, type: 3}
+  - {fileID: 203340775971786751, guid: 76f75da895c680342bbc901f55c7dd9b, type: 3}
+  - {fileID: 5818131343385782392, guid: 908f302768e82234e9a23bf53a3b4b5f, type: 3}
+  - {fileID: 8065568053071841876, guid: 9e8621eff158f8d4a88766ccb8bf12a7, type: 3}
+  - {fileID: 1820122326402810693, guid: 2d2eeddba9988a44b911e7faf8ad6721, type: 3}
+  - {fileID: 203340775971786751, guid: 8789c41ed3316534db1ae77219c3d8f7, type: 3}
   - {fileID: 5098091246126215673, guid: ae9980500ce426f44bc0291cc7639923, type: 3}
-  - {fileID: 2463672794220345588, guid: d7e85f42a8b8a964c9d5055e6f727444, type: 3}
-  - {fileID: 3726564538896904581, guid: d1b0577c323db3f4abdeb68b36c1f702, type: 3}
-  - {fileID: 5769622049555942973, guid: 5a50e01d9bab4ac48a45bf32f22a354a, type: 3}
-  - {fileID: 2647579871925573382, guid: 79613734b97b3fb468c2e30e3018d008, type: 3}
-  - {fileID: 2111120033909903942, guid: a331f7f1bb5c8964c9f59d9e0426d5ba, type: 3}
-  - {fileID: 5810905127386652838, guid: 1dc6f8652f34b7f4998aff702b220805, type: 3}
-  - {fileID: 4341376087843163258, guid: c12564c900aeb514bb4d0f7abbbf2a46, type: 3}
-  - {fileID: 9076155058887306919, guid: 0d5277544015e9845a9f060bbe662506, type: 3}
-  - {fileID: 6319687831339718088, guid: 1887f69ac70d67048bc3d02e8b4b0f5e, type: 3}
-  - {fileID: 9045971557249164563, guid: 4cceb0ca7dd96cb4494f205254ad3751, type: 3}
-  - {fileID: 6142516386604197275, guid: 1cf2f4aea1cf8ad4e85995fad180b7e4, type: 3}
-  - {fileID: 2814702879787398126, guid: f256233660f358e42b87b46c6c3121c9, type: 3}
-  - {fileID: 1268015370339040111, guid: e4bfd560e6e89724b8b2da5e1d32b411, type: 3}
-  - {fileID: 5623362660542549103, guid: 4c337fd9809ab574e93ca8d005a032fc, type: 3}
+  - {fileID: 6357941438930768188, guid: 6a913feb313d90c42a9556b04b550d4f, type: 3}
+  - {fileID: 203340775971786751, guid: 2c3464d703f0cca4b9de2692b593fb04, type: 3}
   - {fileID: 7144969475876212256, guid: cffce65dbd95d81488c651f161ab8392, type: 3}
+  - {fileID: 4057184912420574554, guid: 5f2beb7b6c8abfe4fb6fcb2b03b02cab, type: 3}
+  - {fileID: 1621237590031416257, guid: 0fd6c2ad8b315c9488d4c6a57ecaf283, type: 3}
+  - {fileID: 196278415640130579, guid: 959f81c74d73d084baf3010c7589f43a, type: 3}
+  - {fileID: 203340775971786751, guid: 689dacba82df90f4e80521a1fa63eafa, type: 3}
+  - {fileID: 633454988798022281, guid: 82e787cb4eb0f5848b997721eee677f2, type: 3}
+  - {fileID: 3876832686987024700, guid: 298b9f7d816626647ae4c7116d54f158, type: 3}
+  - {fileID: 3127499181477481159, guid: 4d4ce18bc4bafb7459a60195d1230590, type: 3}
+  - {fileID: 9198152009780532272, guid: 34f90f5c467689948ac930861e83d440, type: 3}
+  - {fileID: 4962110662214532756, guid: 28eb9d7547942f546823ee6b8c25b01d, type: 3}
+  - {fileID: 203340775971786751, guid: f4836764d8f132541b0e7b6d91188a5d, type: 3}
+  - {fileID: 7696381668837615492, guid: e7589609586c16c49b133670bd856fbc, type: 3}
+  - {fileID: 2463672794220345588, guid: d7e85f42a8b8a964c9d5055e6f727444, type: 3}
+  - {fileID: 1119238487230810325, guid: 7801fb4ffbe378d41898605167662a64, type: 3}
+  - {fileID: 5523999978185824258, guid: 9a601d1486356c44e813bfeaefd6dcff, type: 3}
+  - {fileID: 3997549523733915734, guid: 3c637b27daaccae48b10373b25c2a048, type: 3}
+  - {fileID: 203340775971786751, guid: 239538963d34e6046a226ea77d7cec23, type: 3}
+  - {fileID: 6900737790163917995, guid: e8c59228ac71cf344b6eb720d36d5110, type: 3}
+  - {fileID: 2814702879787398126, guid: f256233660f358e42b87b46c6c3121c9, type: 3}
+  - {fileID: 3235502724419461979, guid: 80a80ce0e2335ba48947c56ba02a8086, type: 3}
+  - {fileID: 412033253039404533, guid: 294917788745302418fef040427f91db, type: 3}
+  - {fileID: 101684209628918351, guid: 04d4f56806fd54f49ad2d23ea19db2e9, type: 3}
+  - {fileID: 5620270381193342459, guid: 9974458cdab805e4c932e7338ab741d0, type: 3}
+  - {fileID: 203340775971786751, guid: e41e13730903f32499aa1635fa67880b, type: 3}
+  - {fileID: 203340775971786751, guid: 3001d99b6c3a7ed448df2c6edf57bbf4, type: 3}
+  - {fileID: 3235502724419461979, guid: 80a80ce0e2335ba48947c56ba02a8086, type: 3}
+  - {fileID: 7520322012346147994, guid: 6fbc8847b17821f4d8b146d92bcaa8a8, type: 3}
+  - {fileID: 1344548192792580866, guid: 26e95983ecc298348996db8b8f5b0c42, type: 3}
+  exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32
@@ -106,19 +123,14 @@ MonoBehaviour:
     dynamicAdjustment: 1
     dynamicAdjustmentTolerance: 1
     deliveryTimeEmaDuration: 2
-  connectionQualityInterval: 3
+  evaluationMethod: 0
+  evaluationInterval: 3
   timeInterpolationGui: 0
-  GamePlayerPrefab: {fileID: 8417575699748077097, guid: bfa378385f209fe45a99a4b2144fd072,
+  GamePlayerPrefab: {fileID: 1336061448818776845, guid: dfd7703de664a86419786cde6922f3b2,
     type: 3}
-  playerDataPrefab: {fileID: 1521624539037009591, guid: 7147bc64ff7b711468d55415be55dcc0,
+  playerDataPrefab: {fileID: 1521624539037009591, guid: 6db4968f9ed2d78479e2c00ba9c69ea9,
     type: 3}
   spawnPoints: []
-  ToficID: 76561198355109549
-  TalosID: 76561198836348383
-  BongoID: 76561199504443091
-  ToficTransform: {fileID: 0}
-  TalosTransform: {fileID: 0}
-  BongoTransform: {fileID: 0}
 --- !u!114 &3714840857737582581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,21 +175,6 @@ MonoBehaviour:
   padding: 2
   width: 180
   height: 25
---- !u!114 &3726177492410385574
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7175201784645212267}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f677613d3f67a04ea9762ea03a5b144, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentLobbyID: 0
-  MainMenuSceneName: MainMenu
-  GamePlayScene: GamePlay
 --- !u!114 &8684392366527850784
 MonoBehaviour:
   m_ObjectHideFlags: 0

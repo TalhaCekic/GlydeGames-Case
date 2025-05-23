@@ -1,4 +1,3 @@
-
 using Mirror;
 using TMPro;
 using UnityEngine;
@@ -6,13 +5,14 @@ using UnityEngine.UI;
 
 public class UIOrder : NetworkBehaviour
 {
-    [Header("Ürün bilgisi")]
-    public string OrderImageName;
+    [Header("Ürün bilgisi")] [SyncVar] public string OrderImageName;
+    public TMP_Text OrderName;
     public Image OrderImage;
-    public ScribtableOrderItem _scribtableOrderItem;
-    [Header("Ürün Adedi")]
-    [SyncVar] public int Number;
+    [SyncVar] public int value;
+    [Header("Ürün Adedi")] [SyncVar] public int Number;
     public TMP_Text NumberText;
+
+    public Datas RecipeOrderDataList;
 
     void Start()
     {
@@ -27,41 +27,52 @@ public class UIOrder : NetworkBehaviour
     {
         RpcStart();
     }
+
     [ClientRpc]
     private void RpcStart()
     {
-        NumberText.text = Number.ToString();
         AddValues();
     }
-    public void AddValues()
+
+    private void AddValues()
     {
-        foreach (Sprite UıImage in _scribtableOrderItem.itemSpriteUI)
+        NumberText.text = Number.ToString();
+        OrderName.text = OrderImageName;
+        for (int i = 0; i < RecipeOrderDataList._MenuDatas.Length; i++)
         {
-            if (UıImage.name == OrderImageName)
+            switch (value)
             {
-                OrderImage.sprite = UıImage;
+                case 1:
+                    for (int a = 0; a < RecipeOrderDataList._foodData.Length; a++)
+                    {
+                        if (OrderImageName == RecipeOrderDataList._foodData[a]._name)
+                        {
+                            OrderImage.sprite = RecipeOrderDataList._foodData[a]._sprite; // Sprite atanıyor
+                        }
+                    }
+
+                    break;
+                case 2:
+                    for (int a = 0; a < RecipeOrderDataList._drinkData.Length; a++)
+                    {
+                        if (OrderImageName == RecipeOrderDataList._drinkData[a]._name)
+                        {
+                            OrderImage.sprite = RecipeOrderDataList._drinkData[a]._sprite; // Sprite atanıyor
+                        }
+                    }
+
+                    break;
+                case 3:
+                    for (int a = 0; a < RecipeOrderDataList._snackData.Length; a++)
+                    {
+                        if (OrderImageName == RecipeOrderDataList._snackData[a]._name)
+                        {
+                            OrderImage.sprite = RecipeOrderDataList._snackData[a]._sprite; // Sprite atanıyor
+                        }
+                    }
+
+                    break;
             }
         }
     }
-
-    void Update()
-    {
-        
-    }
-
-
-
-    [Server]
-    public void ServerNumberAdd(int value)
-    {
-        Number += value;
-        print("sayıekle");
-    }  
-    [Server]
-    public void ServerNumberRemove(int value)
-    {
-        Number -= value;
-    }
-
- 
 }

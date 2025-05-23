@@ -1401,15 +1401,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _productItem: {fileID: 0}
+  _gameManager: {fileID: 0}
+  _productItem: {fileID: 5004431951839115363}
   itemsProductItem: []
-  SpawnItemLocation: {fileID: 1745105669887913758}
   BuyProductItemList: []
-  BuyButton: {fileID: 6800432698316437187}
-  isActiveBuyinButton: 0
-  BuyCartAmountText: {fileID: 8822755134160217195}
-  BuyCartAmount: 0
-  isBuying: 0
   SpawnBoxLocation: {fileID: 0}
   KargoTruckPrefab: {fileID: 7144969475876212256, guid: cffce65dbd95d81488c651f161ab8392,
     type: 3}
@@ -1429,7 +1424,7 @@ MonoBehaviour:
   sceneId: 0
   _assetId: 1970689898
   serverOnly: 0
-  visible: 0
+  visibility: 0
   hasSpawned: 0
 --- !u!114 &5004431951839115363
 MonoBehaviour:
@@ -1448,9 +1443,7 @@ MonoBehaviour:
   syncInterval: 0
   addCartManager: {fileID: 5492681669496265513}
   isItemAlreadyAdded: 0
-  scibtableProductBox: {fileID: 11400000, guid: f57fe87d5fe805744b2ff312a6349f1c,
-    type: 2}
-  _productItemData: {fileID: 11400000, guid: a4ab517b7463bc446ab74cfc04fe517f, type: 2}
+  ItemData: {fileID: 11400000, guid: 5d40e3803353603458d3ffcf4866ec12, type: 2}
   _totalAmount: 0
 --- !u!114 &7782207134150402666
 MonoBehaviour:
@@ -2770,7 +2763,7 @@ Transform:
   m_GameObject: {fileID: 2428812787985584283}
   serializedVersion: 2
   m_LocalRotation: {x: 0.00012375598, y: -0.9914444, z: 0.13052629, w: 0.0009397564}
-  m_LocalPosition: {x: 0.0039996617, y: 0.296, z: 0.12699805}
+  m_LocalPosition: {x: 0.0038, y: 0.2971, z: 0.028}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

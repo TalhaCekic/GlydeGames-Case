@@ -1,5 +1,7 @@
 using DG.Tweening;
+using Edgegap;
 using Mirror;
+using Player.PlayerControl;
 using Steamworks;
 using Unity.Mathematics;
 using UnityEngine;
@@ -7,34 +9,50 @@ using UnityEngine;
 public class ItemInteract : NetworkBehaviour
 {
     [SyncVar] public bool isReadyProduct;
+    public AudioSource source;
 
+    public ItemName _ItemName;
     [Header("Item")] 
     [SyncVar] public string itemName;
     [SyncVar] public bool isStateFree;
     [SyncVar] public bool isInteract;
+    [SyncVar] public bool isThrow;
+    [SyncVar] public float DelayThrow;
 
     public Rigidbody rb;
-    public Collider cl;
     public BoxCollider collision;
 
     [Header("El Tutacak Yer")] 
     public Transform RightHandPos;
-    public Transform LeftHandPos;
 
     public Transform RightPosObj;
-    public Transform LeftPosObj;
 
     [Header("Child Obj")] public GameObject ChildObj;
-    
+
+    [SyncVar] private bool isDelete;
     void Start()
     {
         if (isServer)
         {
             ServerStateChange();
+            ServerName();
         }
     }
 
-    void Update()
+    [Server]
+    private void ServerName()
+    {
+        _ItemName.ServerItemName(itemName);
+        RpcStart();
+    }
+
+    [ClientRpc]
+    private void RpcStart()
+    {
+        gameObject.AddComponent<NetworkRigidbodyReliable>();
+    }
+
+    void LateUpdate()
     {
         if (isServer)
         {
@@ -43,9 +61,21 @@ public class ItemInteract : NetworkBehaviour
     }
 
     [Server]
-    private void ServerBoxParentUpdate()
+    public void ServerBoxParentUpdate()
     {
         RpcBoxParentUpdate();
+        if (isThrow)
+        {
+            if (DelayThrow >= 0.5f)
+            {
+                isThrow = false;
+                DelayThrow = 0;
+            }
+            else
+            {
+                DelayThrow += Time.deltaTime;
+            }
+        }
     }
 
     [ClientRpc]
@@ -54,15 +84,14 @@ public class ItemInteract : NetworkBehaviour
         if (ChildObj != null && isInteract)
         {
             this.transform.position = ChildObj.transform.position;
-            if (RightPosObj != null && LeftPosObj != null)
+            if (RightPosObj != null)
             {
                 RightPosObj.position = RightHandPos.position;
-                LeftPosObj.position = LeftHandPos.position;
             }
         }
     }
+    
     // FONKSİYONLAR STATE ////////////////
-
     [Server]
     private void ServerStateChange()
     {
@@ -70,38 +99,46 @@ public class ItemInteract : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcStateChange()
+    public void RpcStateChange()
     {
-        if (rb != null && cl != null)
+        if (rb != null && collision != null)
         {
             if (!isStateFree)
             {
                 rb.isKinematic = true;
-                cl.enabled = false;
                 collision.enabled = false;
-                //networkIdentity.enabled = false;
-                //networkTransformReliable.enabled = false;
-                //networkRigidbodyReliable.enabled = false;
+                this.enabled = true;
             }
             else
             {
                 rb.isKinematic = false;
-                cl.enabled = true;
                 collision.enabled = true;
-                //networkIdentity.enabled = true;
-                //networkTransformReliable.enabled = true;
-                //networkRigidbodyReliable.enabled = true;
+                this.enabled = false;
             }
         }
     }
 
     public void ItemNotParentObj(Vector3 offset)
     {
-        isInteract = false;
-        this.transform.parent = null;
-        this.transform.DOMove(offset, 0.2f)
-            .SetEase(Ease.OutQuad)
-            .OnComplete(() => PutItem());
+        if (isDelete)
+        {
+            source.Play(); // ses ekle
+            isInteract = false;
+            this.transform.parent = null;
+            this.transform.DOMove(new Vector3(offset.x,offset.y+0.1f,offset.z), 0.5f)
+                .SetEase(Ease.OutQuad)
+                .OnComplete(() => PutItem());
+            this.transform.DOScale(Vector3.zero, 0.5f);
+        }
+        else
+        {
+            source.Play(); // ses ekle
+            isInteract = false;
+            this.transform.parent = null;
+            this.transform.DOMove(offset, 0.2f)
+                .SetEase(Ease.OutQuad)
+                .OnComplete(() => PutItem());
+        }
     }
 
     private void PutItem()
@@ -121,27 +158,24 @@ public class ItemInteract : NetworkBehaviour
     public void ItemParentObj(Transform interactPosRot)
     {
         ChildObj = interactPosRot.gameObject;
-        this.transform.parent = interactPosRot.parent;
-        this.transform.position = interactPosRot.position;
-        this.transform.localRotation = Quaternion.Euler(0, 90, 0);
+        this.transform.SetParent(interactPosRot);
+        this.transform.localPosition = Vector3.zero; 
+        this.transform.localRotation = Quaternion.Euler(0, 0, 0);
         isInteract = true;
     }
 
-    public void HandSystem(Transform RightPos, Transform RightRot, Transform LeftPos, Transform LeftRot)
+    public void HandSystem(Transform RightPos)
     {
         RightPosObj = RightPos;
-        LeftPosObj = LeftPos;
         RightPos.position = RightHandPos.position;
-        RightPos.rotation = Quaternion.Euler(0, 0, 0);
-        LeftPos.position = LeftHandPos.position;
-        LeftPos.rotation = Quaternion.Euler(0, 0, 0);
+        RightPos.rotation = Quaternion.Euler(-77, -42, -94);
     }
     
     public void Trash(Transform trashPos)
     {   
         this.transform.SetParent(null);
         isInteract = false;
-        Vector3 newPos = new Vector3(trashPos.position.x, trashPos.position.y + 1.5f, trashPos.position.z);
+        Vector3 newPos = new Vector3(trashPos.position.x, trashPos.position.y + 0.5f, trashPos.position.z);
         this.transform.DOScale(Vector3.zero, 0.8f);
         this.transform.DOMove(newPos, 0.5f)
             .OnComplete(() => onComplateTrash());
@@ -150,6 +184,26 @@ public class ItemInteract : NetworkBehaviour
     void onComplateTrash()
     {
         Destroy(this);
+    }
+
+    public void rbForce()
+    {
+        rb.AddForce(Vector3.forward*10);
+    }
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            if (isThrow)
+            {
+                Vector3 targetPos = new Vector3(rb.velocity.x, rb.velocity.y +5, rb.velocity.z);
+                other.gameObject.GetComponent<Player.PlayerControl.PlayerController>().rbForce(targetPos.normalized);
+            }
+        }
+    }
+    public void ServerDeleteSystem(bool value)
+    {
+        isDelete = value;
     }
     
 }

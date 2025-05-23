@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CustomerOrderPanel : NetworkBehaviour
 {
@@ -9,8 +10,11 @@ public class CustomerOrderPanel : NetworkBehaviour
     [Header("Spawn System")] public Transform SpawnIconPos;
     public GameObject Canvas;
     [SyncVar] public bool State;
+    [SyncVar] public int values; 
 
     [Header("Sipariş Görsel")] public List<GameObject> SpawnOrderIcon;
+    
+    public Slider Slider;
 
     //public GameObject OrderIcon;
 
@@ -58,22 +62,31 @@ public class CustomerOrderPanel : NetworkBehaviour
     // Rpc
     private void OrderCanvas()
     {
-        if (_customer.isStop)
+        if (_customer.isStop&& !_customer.isFinish && !_customer.isEat)
         {
-            if (_customer.customerQueue == 1 && _customer.WaitingForOrder)
+            if (_customer.customerQueue == 1 && !_customer.WaitingForOrder)
             {
                 Canvas.SetActive(true);
                 _customer.ServerCustomerTime();
             }
             else if (_customer.customerQueue > 0 && !_customer.WaitingForOrder)
             {
+                Canvas.SetActive(false);
+                _customer.ServerCustomerTime();
+            }
+            else if(_customer.WaitingForOrder)
+            {
                 Canvas.SetActive(true);
                 _customer.ServerCustomerTime();
             }
-            else
-            {
-                Canvas.SetActive(false);
-            }
+        }
+        else if (_customer.isFinish)
+        {
+            Canvas.SetActive(false);
+        }
+        else if(!_customer.isEat && _customer.isChair)
+        {
+            Canvas.SetActive(true);
         }
         else
         {
@@ -82,29 +95,45 @@ public class CustomerOrderPanel : NetworkBehaviour
     }
 
     // Server
+    [Server]
     private void SelectIconAndCreate()
     {
         if (!State && _customer.isStop)
         {
-            foreach (var OrderName in _customer.orderItems)
+            for (int i = 0; i < 3; i++)
             {
-                UIOrder uiOrder = _customer.scribtableOrderItem.itemSprite.GetComponent<UIOrder>();
-                GameObject OrderIcon = Instantiate(uiOrder.gameObject);
-                NetworkServer.Spawn(OrderIcon);
-                RpcParentAndPosIcon(OrderIcon, OrderName.itemName,OrderName.quantity);
-                State = true;
+                foreach (var OrderName in _customer.orderItems)
+                {
+                    UIOrder uiOrder = _customer.RecipeData.prefabOrderCanvas.GetComponent<UIOrder>();
+                    GameObject OrderIcon = Instantiate(uiOrder.gameObject);
+                    NetworkServer.Spawn(OrderIcon);
+                    values++;
+                    RpcParentAndPosIcon(OrderIcon, OrderName.MealName,OrderName.DrinkName,OrderName.SnackName,values);
+                    State = true;
+                }
             }
         }
     }
     [ClientRpc]
-    private void RpcParentAndPosIcon(GameObject obj, string name,int number)
+    private void RpcParentAndPosIcon(GameObject obj, string mealName,string drinksName,string snackName,int value)
     {
         SpawnOrderIcon.Add(obj);
         obj.transform.SetParent(SpawnIconPos);
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localRotation = Quaternion.Euler(0, 0, 0);
-        
-        obj.GetComponent<UIOrder>().OrderImageName = name;
-        obj.GetComponent<UIOrder>().Number = number;
+        obj.GetComponent<UIOrder>().value = value;
+
+        switch (obj.GetComponent<UIOrder>().value)
+        {
+            case 1 :
+                obj.GetComponent<UIOrder>().OrderImageName = mealName;
+                break;
+            case 2 :
+                obj.GetComponent<UIOrder>().OrderImageName = drinksName;
+                break;
+            case 3 :
+                obj.GetComponent<UIOrder>().OrderImageName = snackName;
+                break;
+        }
     }
 }

@@ -1,17 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CustomerManager : NetworkBehaviour
 {
     public static CustomerManager instance;
     public GameManager gameManager;
+    [Header("ChairManager")] public List<GameObject> Chairs;
+    [Header("Toilet")] public List<GameObject> Toilet;
 
     [Header("Per Day Spawn")] [SyncVar] public int customerPerDay;
     [SyncVar] public bool isSpawnCustomer;
     [SyncVar] public bool currentSpawn;
+    [SyncVar] public bool finishSpawn;
     [SyncVar] public float SpawnDelay;
     [SyncVar] public int SpawnIndex;
 
@@ -20,10 +25,7 @@ public class CustomerManager : NetworkBehaviour
     public List<GameObject> CustomersList = new List<GameObject>();
     [Header("SpawnPos")] public List<Transform> CustomersSpawnPos = new List<Transform>();
 
-    [Header("Queue")]
-    //[SyncVar] public bool CustomerOnStage;
-    public List<GameObject> OrderStayQueue;
-    public List<GameObject> CashRegisterQueue;
+    [Header("Queue")] public List<GameObject> OrderStayQueue;
 
     void Start()
     {
@@ -46,6 +48,25 @@ public class CustomerManager : NetworkBehaviour
         gameManager = GameManager.instance.GetComponent<GameManager>();
     }
 
+    public void RemoveChairs(GameObject chair)
+    {
+        Chairs.Remove(chair);
+    }
+
+    public void AddChairs(GameObject chair)
+    {
+        Chairs.Add(chair);
+    }  
+    public void RemoveToilet(GameObject chair)
+    {
+        Toilet.Remove(chair);
+    }
+
+    public void AddToilet(GameObject chair)
+    {
+        Toilet.Add(chair);
+    }
+
     void Update()
     {
         if (isServer)
@@ -58,7 +79,7 @@ public class CustomerManager : NetworkBehaviour
     [Server]
     public void ServerListQueueState()
     {
-        if (OrderStayQueue.Count == 0 && CashRegisterQueue.Count == 0)
+        if (OrderStayQueue.Count == 0 && Chairs.Count == 0)
         {
             GameManager.instance.RpcDayPanel(true);
         }
@@ -68,10 +89,12 @@ public class CustomerManager : NetworkBehaviour
     public void ServerCustomerSpawnState()
     {
         if (gameManager == null) return;
+        if (finishSpawn) return;
 
         if (gameManager.isDayOn && !isSpawnCustomer)
         {
-            customerPerDay = Random.Range(6, 7);
+            //customerPerDay = Random.Range(6, 7);
+            customerPerDay = 2;
             isSpawnCustomer = true;
         }
 
@@ -109,6 +132,10 @@ public class CustomerManager : NetworkBehaviour
                     break;
                 }
             }
+            else
+            {
+                finishSpawn = false;
+            }
         }
     }
 
@@ -123,38 +150,37 @@ public class CustomerManager : NetworkBehaviour
     [ClientRpc]
     private void RpcCustomerSpawn(int index, GameObject obj)
     {
-        obj.transform.SetParent(this.gameObject.transform);
         obj.transform.position = CustomersSpawnPos[index].position;
+        obj.GetComponent<Customer>().LeaveSelected = CustomersSpawnPos[index];
         obj.SetActive(true);
         CustomersList.Add(obj);
         OrderStayQueue.Add(obj);
-    }
-    [ClientRpc]
-    public void ServerCustomerQueueRemove(GameObject obj)
-    {
-        OrderStayQueue.Remove(obj);
     }
 
     public void ServerQueueMove()
     {
         foreach (var orderQueue in OrderStayQueue)
         {
-            orderQueue.GetComponent<Customer>().customerQueue -= 1;
-            orderQueue.GetComponent<Customer>().RpcSelectOrderStayGoPos();
+            //orderQueue.GetComponent<Customer>().customerQueue -= 1;
+            //orderQueue.GetComponent<Customer>().RpcSelectOrderStayGoPos();
+            orderQueue.GetComponent<Customer>().ServerSelectGoPos();
         }
     }
-
-    public void ServerCashQueue(GameObject Obj)
+    public void ServerQueueMoveRemove()
     {
-        Obj.GetComponent<Customer>().customerQueue = CashRegisterQueue.Count;
+        foreach (var orderQueue in OrderStayQueue)
+        {
+            orderQueue.GetComponent<Customer>().customerQueue -= 1;
+            orderQueue.GetComponent<Customer>().ServerSelectGoPos();
+        }
     }
 
     public void ServerCashQueueMove()
     {
-        foreach (var orderQueue in CashRegisterQueue)
+        foreach (var orderStayQueue in OrderStayQueue)
         {
-            orderQueue.GetComponent<Customer>().customerQueue -= 1;
-            orderQueue.GetComponent<Customer>().RpcSelectCashRegisterGoPos();
+            orderStayQueue.GetComponent<Customer>().customerQueue -= 1;
+            orderStayQueue.GetComponent<Customer>().ServerSelectGoPos();
         }
     }
 }

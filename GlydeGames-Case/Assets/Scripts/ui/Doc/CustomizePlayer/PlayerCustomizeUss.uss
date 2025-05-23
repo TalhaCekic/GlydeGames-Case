@@ -1,0 +1,9 @@
+.Cards {
+    width: 420px;
+    height: 55px;
+}
+
+.ElementsOnCards {
+    width: auto;
+    height: 30px;
+}

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Mirror;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class RegisterCardItem : NetworkBehaviour
 {
@@ -45,23 +45,6 @@ public class RegisterCardItem : NetworkBehaviour
 		itemCountText.text = itemCount.ToString();
 		itemAmountText.text = itemAmountCurrent.ToString();
 	}
-	
-	public void Initialize(string name, int amount, Image pp) {
-		itemName = name;
-		itemAmount = amount;
-		itemAmountCurrent = amount;
-		itemNameText.text = itemName;
-		itemAmountText.text = itemAmount.ToString();
-		itemPP = pp;
-		itemPPObj.GetComponent<Image>().sprite= pp.sprite;
-		itemCount++;
-	}
-	public void ParentSpawn(GameObject SpawnTransform) {
-		if (isServer)
-		{
-			ServerParentSpawn(SpawnTransform);
-		}
-	}
 
 	[Server]
 	public void ServerParentSpawn(GameObject SpawnTransform) {
@@ -71,16 +54,11 @@ public class RegisterCardItem : NetworkBehaviour
 			isSpawn = false;
 		}
 	}
-
-	[Server]
-	public void ServerAddCount() {
-		itemCount++;
-		itemAmountCurrent += itemAmount;
-	}
+	
 	[Server]
 	public void Destroy()
 	{
-		RegisterAddToCartManager.instance.DeleteCartItems(itemAmountCurrent);
+		//RegisterAddToCartManager.instance.DeleteCartItems(itemAmountCurrent);
 		RegisterAddToCartManager.instance.ItemCardItemList.RemoveAll(item => item.name == itemName);
 		Destroy(this.gameObject);
 	}

@@ -31,6 +31,24 @@ TagManager:
   - CutItem
   - TrashBin
   - Box
+  - ItemInfoCanvas
+  - Fryer
+  - Meal
+  - Tray
+  - Brush
+  - Burger
+  - Meat
+  - Tomato
+  - Cheese
+  - Lettuce
+  - Cup
+  - Patato
+  - ItemBox
+  - Stop
+  - Esquina
+  - Marcador
+  - Blocks
+  - IaCar
   layers:
   - Default
   - TransparentFX
@@ -46,24 +64,24 @@ TagManager:
   - Counter
   - Grill
   - Item
-  - Knife
+  - OrderSlot
   - Customer
   - Door
   - TrashBin
   - Post
+  - ItemSlot
+  - Tray
+  - FryerSlot
+  - FryerButton
+  - GrillButton
+  - DrinkMachine
+  - DrinkButton
+  - Pool
+  - Brush
+  - OnlineDoor
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Screen
   m_SortingLayers:
   - name: Default
     uniqueID: 0

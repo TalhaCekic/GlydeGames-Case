@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c9eec10da81326478c2ff4a33978e52, type: 3}
+  m_Name: OnlineService
+  m_EditorClassIdentifier: 
+  _name: Online Order
+  _saleValue: 400
+  _image: {fileID: 2800000, guid: 14054878f0702c945bb67e59a1f89e24, type: 3}
+  _sprite: {fileID: 21300000, guid: 14054878f0702c945bb67e59a1f89e24, type: 3}
+  _active: 0

@@ -1,0 +1,6 @@
+
+.my-scroll-view > .unity-scroll-view__content-container {
+    flex-direction: column; /* Elemanları dikey hizalar */
+    align-items: center; /* Elemanları ortalar */
+    padding: 10px; /* Kenar boşlukları */
+}

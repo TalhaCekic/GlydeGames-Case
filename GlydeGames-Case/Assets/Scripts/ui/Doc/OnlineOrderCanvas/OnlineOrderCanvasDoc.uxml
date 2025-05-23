@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/ui/Doc/ItemInfoCanvas/%C4%B1temInfoCanvasUss.uss?fileID=7433441132597879392&amp;guid=79bdf7f2b191a4946a2f5b71e4698e64&amp;type=3#ıtemInfoCanvasUss" />
+    <Style src="project://database/Assets/Scripts/ui/Doc/InGameHud/InGameHudUSS.uss?fileID=7433441132597879392&amp;guid=29d3bb24a577b32498943bffe9e3e829&amp;type=3#InGameHudUSS" />
+    <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="OnlineScrollView" vertical-scroller-visibility="Hidden" horizontal-scroller-visibility="Hidden" style="position: absolute; height: 420px; width: 256px; top: 332px; left: 72px; background-color: rgba(0, 0, 0, 0.2);">
+        <ui:VisualElement name="baslikText" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.59);">
+            <ui:Label text="Online Order" parse-escape-sequences="true" display-tooltip-when-elided="true" name="OnlineOrderLabel" style="-unity-text-align: middle-center; -unity-font-style: normal; -unity-font-definition: url(&quot;project://database/Assets/Fonts/Inter-Bold%20SDF.asset?fileID=11400000&amp;guid=da8e6a2465c9c9a4599fc148f4652194&amp;type=2#Inter-Bold SDF&quot;); font-size: 20px; color: rgb(255, 0, 0);" />
+        </ui:VisualElement>
+    </ui:ScrollView>
+</ui:UXML>

@@ -9,25 +9,7 @@ public class BoxSpawnerManager : NetworkBehaviour
     public List<GameObject> Items = new List<GameObject>();
 
     [SyncVar] public float ObjEnableDelay;
-
-    void Update()
-    {
-        if (isServer)
-        {
-            ServerUpdate();
-        }
-    }
-
-    [Server]
-    private void ServerUpdate()
-    {
-        RpcUpdate();
-    }
-
-    [ClientRpc]
-    private void RpcUpdate()
-    {
-    }
+    
 
     // listeye ekleme yapar ve slotlara ekleme yapar
     [Server]
@@ -41,7 +23,7 @@ public class BoxSpawnerManager : NetworkBehaviour
     {
         for (int i = 0; i < Items.Count; i++)
         {
-            Items[i].SetActive(false);
+            //Items[i].SetActive(false);
             Items[i].transform.parent = this.gameObject.transform;
             Items[i].transform.position = Slots[i].position;
         }
@@ -54,27 +36,27 @@ public class BoxSpawnerManager : NetworkBehaviour
         ObjEnableDelay += Time.deltaTime;
         if (ObjEnableDelay > 2)
         {
-            RpcItemListRemove();
+            //RpcItemListRemove();
+            RpcItemActive();
             ObjEnableDelay = 0;
         }
     }
-
-   // [ClientRpc]
+    public void RpcItemActive()
+    {
+        if (Items.Count > 0)
+        {
+            //Items[0].SetActive(true);
+            //Items[Items.Count].transform.parent = null;
+        }
+    }
+    // ele alınınca listede siler
     public void RpcItemListRemove()
     {
         if (Items.Count > 0)
         {
-            Items[0].SetActive(true);
-            Items[0].transform.parent = null;
+            //Items[0].SetActive(true);
+            //Items[0].transform.parent = null;
             Items.Remove(Items[0]);
         }
-        // eski spawn sistemi
-        // for (int i = 0; i < Items.Count; i++)
-        // {
-        //     Items[i].SetActive(true);
-        //     Items[i].transform.parent = null;
-        //     
-        // }
-        // Items.Clear();
     }
 }

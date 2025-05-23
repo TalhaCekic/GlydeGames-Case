@@ -9,22 +9,19 @@ using UnityEngine;
 public class DailyStatistics : NetworkBehaviour
 {
     public static DailyStatistics instance;
-    
-    [Header("Day of Obj")] 
-    public GameObject DayOffManager;
+
+    [Header("Day of Obj")] public GameObject DayOffManager;
     public bool isDayPanel;
-    
-    [Header("Incoming Customers")] 
-    public TMP_Text IncomingCustomersCountText;
+
+    [Header("Incoming Customers")] public TMP_Text IncomingCustomersCountText;
     [SyncVar] public int IncomingCustomersCount;
-    
-    [Header("Money Earned")] 
-    public TMP_Text MoneyEarnedText;
-    [SyncVar] public int MoneyEarnedCount;   
-    
+
+    [Header("Money Earned")] public TMP_Text MoneyEarnedText;
+    [SyncVar] public float MoneyEarnedCount;
+
     [Header("Customer Satisfaction")] 
     public TMP_Text CustomerSatisfactionHappyText;
-    [SyncVar] public int CustomerSatisfactionHappyCount;   
+    [SyncVar] public int CustomerSatisfactionHappyCount;
     public TMP_Text CustomerSatisfactionNormalText;
     [SyncVar] public int CustomerSatisfactionNormalCount;
     public TMP_Text CustomerSatisfactionSadText;
@@ -33,22 +30,6 @@ public class DailyStatistics : NetworkBehaviour
     private void Start()
     {
         instance = this;
-        if (isServer)
-        {
-            ServerStart();
-        }
-    }
-
-    [Server]
-    private void ServerStart()
-    {
-        RpcStart();
-    }
-
-    [ClientRpc]
-    private void RpcStart()
-    {
-        DayPanel(false);
     }
 
     [Server]
@@ -56,13 +37,20 @@ public class DailyStatistics : NetworkBehaviour
     {
         IncomingCustomersCount += Value;
     }
+
     [Server]
-    public void ServerMoneyEarnedCountAdd(int Value)
+    public void ServerMoneyEarnedCountAdd(float Value)
     {
         MoneyEarnedCount += Value;
     }
     [Server]
-    public void ServerCustomerSatisfactionCountAdd(int HappyValue,int NormalValue,int SadValue)
+    public void ServerMoneyEarnedCountRemove(float Value)
+    {
+        MoneyEarnedCount -= Value;
+    }
+
+    [Server]
+    public void ServerCustomerSatisfactionCountAdd(int HappyValue, int NormalValue, int SadValue)
     {
         CustomerSatisfactionHappyCount += HappyValue;
         CustomerSatisfactionNormalCount += NormalValue;
@@ -73,18 +61,16 @@ public class DailyStatistics : NetworkBehaviour
     {
         isDayPanel = value;
         DayOffManager.SetActive(isDayPanel);
-    }   
-    
+    }
+
     [ClientRpc]
     public void DayPanelAddText()
     {
-       
-            IncomingCustomersCountText.text = IncomingCustomersCount.ToString();
-            MoneyEarnedText.text = MoneyEarnedCount.ToString();
-            CustomerSatisfactionHappyText.text = CustomerSatisfactionHappyCount.ToString();
-            CustomerSatisfactionNormalText.text = CustomerSatisfactionNormalCount.ToString();
-            CustomerSatisfactionSadText.text = CustomerSatisfactionSadCount.ToString();
-        
+        IncomingCustomersCountText.text = IncomingCustomersCount.ToString();
+        MoneyEarnedText.text = MoneyEarnedCount.ToString();
+        CustomerSatisfactionHappyText.text = CustomerSatisfactionHappyCount.ToString();
+        CustomerSatisfactionNormalText.text = CustomerSatisfactionNormalCount.ToString();
+        CustomerSatisfactionSadText.text = CustomerSatisfactionSadCount.ToString();
     }
 
     public void IsdayPanelFalse()

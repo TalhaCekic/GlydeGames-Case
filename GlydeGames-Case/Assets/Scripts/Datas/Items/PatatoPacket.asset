@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1590ded0c4a25cf4abeaae65868913eb, type: 3}
+  m_Name: PatatoPacket
+  m_EditorClassIdentifier: 
+  _name: Patato Packet
+  _buyValue: 5
+  _amount: 1
+  _image: {fileID: 2800000, guid: 699c867b93bc0c541815a444c7b87096, type: 3}
+  ObjPrefab: {fileID: 203340775971786751, guid: e41e13730903f32499aa1635fa67880b,
+    type: 3}

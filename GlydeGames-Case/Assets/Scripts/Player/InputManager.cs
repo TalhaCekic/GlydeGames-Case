@@ -25,7 +25,7 @@ namespace Player.Manager
 		public bool Mouse0Click { get; private set; }
 		public bool Mouse0Hold { get; private set; }
 		public bool Mouse1 { get; private set; }
-		public bool RotationProduct { get; private set; }
+		public bool Throw { get; private set; }
 
 		private InputActionMap _currentMap;
 		private InputActionMap _menuCurrentMap;
@@ -36,12 +36,11 @@ namespace Player.Manager
 		private InputAction _crouchAction;
 		private InputAction _ınteractAction;
 		private InputAction _dropAction;
-		private InputAction _boxCoverAction;
 		private InputAction _pauseAction;
 		private InputAction _mouse0ClickAction;
 		private InputAction _mouse0HoldAction;
 		private InputAction _mouse1Action;
-		private InputAction _rotationProductAction;
+		private InputAction _throwAction;
 
 		private void Awake() {
 			playerInteract = GetComponent<PlayerInteract>();
@@ -55,11 +54,10 @@ namespace Player.Manager
 			_crouchAction = _currentMap.FindAction("Crouch");
 			_ınteractAction = _currentMap.FindAction("Interact");
 			_dropAction = _currentMap.FindAction("Drop");
-			_boxCoverAction = _currentMap.FindAction("BoxCover");
 			_mouse0ClickAction = _currentMap.FindAction("Mouse0Click");
 			_mouse0HoldAction = _currentMap.FindAction("Mouse0Hold");
 			_mouse1Action = _currentMap.FindAction("Mouse1");
-			_rotationProductAction = _currentMap.FindAction("RotationProduct");
+			_throwAction = _currentMap.FindAction("Throw");
 			_pauseAction = _menuCurrentMap.FindAction("Pause");
 		
 			_moveAction.performed += onMove;
@@ -69,14 +67,11 @@ namespace Player.Manager
 			_crouchAction.started += onCrouch;
 			_ınteractAction.started += onInteract;
 			_dropAction.started += onDrop;
-			_boxCoverAction.started += onBoxCover;
-			_rotationProductAction.started += onRotation;
-			_mouse0ClickAction.performed += onMouse0Click;//   (sol Click)
-			_mouse1Action.performed += onMouse1;//   (sağ Click)
+			_throwAction.started += onThrow;   // fırlatma
+			_mouse0ClickAction.started += onMouse0Click;//   (sol Click)
+			_mouse1Action.started += onMouse1;//   (sağ Click)
 			_pauseAction.started += onPause;
 			
-			_mouse0HoldAction.performed += onMouse0Hold;// basılı tutma eylemi (sol Click)
-
 			_moveAction.canceled += onMove;
 			_lookAction.canceled += onLook;
 			_runAction.canceled += onRun;
@@ -84,21 +79,20 @@ namespace Player.Manager
 			_crouchAction.canceled += onCrouch;
 			_ınteractAction.canceled += onInteract;
 			_dropAction.canceled += onDrop;
-			_boxCoverAction.canceled += onBoxCover;
-			_rotationProductAction.canceled += onRotation;
+			_throwAction.canceled += onThrow; // fırlatma
 			_mouse0ClickAction.canceled += onMouse0ClickCanceled; // sol click iptali
 			_pauseAction.canceled += onPause;
 			
 		}
 		private void Update() {
-			if (_mouse0HoldAction.IsPressed()) {
-				Mouse0Hold= true;
-				if (isLocalPlayer) {
-					playerInteract.BoxInteractShelftoBoxHold();
-				}
-			} else {
-				Mouse0Hold = false;
-			}
+			// if (_mouse0HoldAction.IsPressed()) {
+			// 	Mouse0Hold= true;
+			// 	if (isLocalPlayer) {
+			// 		playerInteract.BoxInteractShelftoBoxHold();
+			// 	}
+			// } else {
+			// 	Mouse0Hold = false;
+			// }
 
 			// if (_mouse1Action.IsPressed()) {
 			// 	Mouse1 = true;
@@ -146,47 +140,31 @@ namespace Player.Manager
 			if (!isLocalPlayer) return;
 			playerInteract.DropedInteract();
 		}
-		private void onBoxCover(InputAction.CallbackContext context) {
-			BoxCover = context.ReadValueAsButton();
 
-			if (!isLocalPlayer) return;
-				playerInteract.BoxCoverClose();
-		}
-		private void onMouse0Hold(InputAction.CallbackContext context) {
-			Mouse0Hold = context.ReadValueAsButton();
-
-			if (!isLocalPlayer) return;
-			//playerInteract.BoxInteractShelftoBoxHold();
-		}	
 		private void onMouse0Click(InputAction.CallbackContext context) {
 			Mouse0Click = context.ReadValueAsButton();
 
 			if (!isLocalPlayer) return;
 			if (!playerInteract.mouseActivity)
 			{
-				playerInteract.BoxInteractShelftoBoxClick();
+				playerInteract.BoxInteractShelftoBoxHold();
 			}
 		}	
 		private void onMouse0ClickCanceled(InputAction.CallbackContext context) {
 			Mouse0Click = context.ReadValueAsButton();
 
 			if (!isLocalPlayer) return;
-			if (!playerInteract.mouseActivity)
-			{
-				playerInteract.MouseInputCanceled();
-			}
 		}	
 		private void onMouse1(InputAction.CallbackContext context) {
 			Mouse1 = context.ReadValueAsButton();
 
 			if (!isLocalPlayer) return;
-			playerInteract.BoxInteractBoxtoShelf();
 		}
-		private void onRotation(InputAction.CallbackContext context) {
-			RotationProduct = context.ReadValueAsButton();
+		private void onThrow(InputAction.CallbackContext context) {
+			Throw = context.ReadValueAsButton();
 
 			if (!isLocalPlayer) return;
-			playerInteract.ItemRotationProduct();
+			playerInteract.Throw();
 		}
 
 		private void onPause(InputAction.CallbackContext context) {

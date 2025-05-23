@@ -4,6 +4,7 @@ using Steamworks;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerListObjController : NetworkBehaviour
 {
@@ -21,11 +22,6 @@ public class PlayerListObjController : NetworkBehaviour
      public bool Ready;
 
     [SyncVar] public bool inAnim;
-    [SyncVar] public bool outAnim;
-    [SyncVar] public bool upAnim;    
-    [SyncVar] public bool isTofic;
-    [SyncVar] public bool isTalos;
-    [SyncVar] public bool isBongo;
 
     private CustomNetworkManager manager;
 
@@ -39,18 +35,6 @@ public class PlayerListObjController : NetworkBehaviour
             }
 
             return manager = CustomNetworkManager.singleton as CustomNetworkManager;
-        }
-    }
-    void Start() {
-        if (isServer)
-        {
-            LobbyAnimation();
-        }
-    }
-    void Update() {
-        if (isServer)
-        {
-            //LobbyAnimation();
         }
     }
 
@@ -86,7 +70,7 @@ public class PlayerListObjController : NetworkBehaviour
 
     public void ChangeReady()
     {
-        if (hasAuthority)
+        if (isLocalPlayer)
         {
             CmdSetPlayerReady();
         }
@@ -132,57 +116,5 @@ public class PlayerListObjController : NetworkBehaviour
             LobbyController.Instance.UpdatePlayerList();
         }
     }
-
-    [Server]
-    private void LobbyAnimation()
-    {
-        if (inAnim)
-        {
-            StayAnims.SetBool("inAnim",true);
-        }   
-        if (outAnim)
-        {
-            StayAnims.SetBool("outAnim",true);
-        }  
-        if (upAnim)
-        {
-            StayAnims.SetBool("upAnim",true);
-        } 
-        // if (isTofic)
-        // {
-        //     StayAnims.SetBool("isTofic",true);
-        // }   
-        // if (isTalos)
-        // {
-        //     StayAnims.SetBool("isTalos",true);
-        // }  
-        // if (isBongo)
-        // {
-        //     StayAnims.SetBool("isBongo",true);
-        // }
-    }
-    [Server]
-    public void InAnim(bool value) {
-        inAnim = value;
-    }   
-    [Server]
-    public void OutAnim(bool value) {
-        outAnim = value;
-    } 
-    [Server]
-    public void UpAnim(bool value) {
-        upAnim = value;
-    }   
-    // [Server]
-    // public void IsTofic(bool value) {
-    //     isTofic = value;
-    // }   
-    // [Server]
-    // public void IsTalos(bool value) {
-    //     isTalos = value;
-    // } 
-    // [Server]
-    // public void IsBongo(bool value) {
-    //     isBongo = value;
-    // }
+    
 }

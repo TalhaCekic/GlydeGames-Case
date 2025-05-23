@@ -25,80 +25,166 @@ public class SteamLobby : MonoBehaviour
     public string MainMenuSceneName;
     public string GamePlayScene;
 
+    private float DelayForLobby;
+    
+    private CSteamID hostSteamID;  // Host'un SteamID'si
+    public bool isHostDisconnected = false; // Host bağlantı durumu için kontrol
+
     private void Awake()
     {
         if (instance != null)
         {
             instance = this;
         }
+        //DontDestroyOnLoad(this.gameObject);
     }
 
     private void Start()
     {
+        // if (SceneManager.GetActiveScene().buildIndex != 0)
+        // {
+        //     currentLobbyID = SteamLobby.instance.currentLobbyID;
+        // }
+        if (SceneManager.GetActiveScene().buildIndex != 0)return;
+        DelayForLobby = 0;
         CheckSteamConnection();
         if (!SteamManager.Initialized)
         {
             return;
         }
 
-        manager = GetComponent<CustomNetworkManager>();
+        //manager = GetComponent<CustomNetworkManager>();
+        GameObject Manager = GameObject.Find("NetworkManager");
+        manager = Manager.GetComponent<CustomNetworkManager>();
         instance = this;
 
         LobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         JoinRequest = Callback<GameLobbyJoinRequested_t>.Create(onJoinRequest);
         LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
-        LobbyDisconnected = Callback<SteamServersDisconnected_t>.Create(OnLobbyDisconnected);
-        lobbyKicked = Callback<GSClientKick_t>.Create(OnLobbyKicked);
+        if (NetworkServer.active) return;
         Host();
+    }
+
+    private void Update()
+    {
+        CheckHostStatus();
+    }
+    public void CheckHostStatus()
+    {
+       // if (currentLobbyID == 0) return;
+       currentLobbyID = SteamLobby.instance.currentLobbyID; 
+        
+        int memberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(currentLobbyID));
+
+        for (int i = 0; i < memberCount; i++)
+        {
+            CSteamID memberID = SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(currentLobbyID), i);
+            if (memberID == hostSteamID)
+            {
+                isHostDisconnected = false; 
+                DelayForLobby = 0;
+                return;
+            }
+        }
+
+        isHostDisconnected = true;
+        if (currentLobbyID == 0 && isHostDisconnected) 
+        {
+            if (DelayForLobby > 3)
+            {
+                DelayForLobby = 0;
+                leaving();
+            }
+            else
+            {
+                DelayForLobby += Time.deltaTime;
+            }
+        }
     }
 
     public void NextScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         NetworkManager.singleton.ServerChangeScene(GamePlayScene);
+        currentLobbyID = SteamLobby.instance.currentLobbyID; 
     }
 
     private void CheckSteamConnection()
     {
         if (!SteamManager.Initialized)
         {
-            SteamManager steamManager = gameObject.GetComponent<SteamManager>();
+            SteamManager steamManager = manager.GetComponent<SteamManager>();
             steamManager.enabled = true;
             FizzySteamworks.active.ClientConnected();
         }
     }
 
-    public void SinglePlayerButton()
-    {
-        manager.maxConnections = 1;
-        NextScene();
-        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, manager.maxConnections);
-    }
-
     public void Host()
     {
-        manager.maxConnections = 4;
-        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, manager.maxConnections);
+        print("host");
+        NetworkManager.singleton.maxConnections = 4;
+        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, NetworkManager.singleton.maxConnections);
+        hostSteamID = SteamUser.GetSteamID();
+    }
+
+    // lobiden ayrılma li
+    public void leaving()
+    {
+        if (LobbyDatas.instance != null)LobbyDatas.instance.ChangeUpdateReset();
+        CustomNetworkManager.instance.ResetData(); //
+        
+        if (NetworkServer.active)
+        {
+            NetworkManager.singleton.StopHost();
+        }
+        else if (NetworkClient.active)
+        {
+            NetworkManager.singleton.StopClient();
+        }
+
+        SteamMatchmaking.LeaveLobby(new CSteamID(currentLobbyID));
+        SteamMatchmaking.DeleteLobbyData((CSteamID)currentLobbyID, "name");
+        currentLobbyID = 0;
+        if (LobbyDatas.instance != null)
+        {
+            Destroy(LobbyDatas.instance.gameObject);
+        }
+        SceneManager.LoadScene(0);
+        StartCoroutine(DelayedAction());
+    }
+
+    IEnumerator DelayedAction()
+    {
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene(0);
+        CustomNetworkManager.singleton.StartHost();
+        Host();
     }
 
     // lobiden ayrılma butonu
-    public void leaving()
+    public void leavingToServer()
     {
-        SteamMatchmaking.LeaveLobby((CSteamID)currentLobbyID);
+        if (LobbyDatas.instance != null)LobbyDatas.instance.ChangeUpdateReset();
+        
+        if (NetworkServer.active)
+        {
+            NetworkManager.singleton.StopHost();
+        }
+        else if (NetworkClient.active)
+        {
+            NetworkManager.singleton.StopClient();
+        }
+
+        SteamMatchmaking.LeaveLobby(new CSteamID(currentLobbyID));
         SteamMatchmaking.DeleteLobbyData((CSteamID)currentLobbyID, "name");
-        MainMenu();
+        currentLobbyID = 0;
+        CustomNetworkManager.instance.ResetData();
     }
+
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         NetworkManager.singleton.ServerChangeScene(GamePlayScene);
-    }
-
-    public void MainMenu()
-    {
-        NetworkManager.singleton.StopClient();
-        NetworkManager.singleton.StopHost();
-        SceneManager.LoadScene(0);
     }
 
     public void InviteButton()
@@ -113,15 +199,18 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
-        manager.StartHost();
+        //manager.StartHost();
+        NetworkManager.singleton.StartHost();
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAdressKey,
             SteamUser.GetSteamID().ToString());
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "name",
             SteamFriends.GetPersonaName().ToString());
+        hostSteamID = SteamUser.GetSteamID();
     }
 
-    private void onJoinRequest(GameLobbyJoinRequested_t callback) {
-        leaving();
+    private void onJoinRequest(GameLobbyJoinRequested_t callback)
+    {
+        leavingToServer();
         //MainMenuCanvas.instance.joinedLobby();
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     }
@@ -137,22 +226,9 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
-        manager.networkAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAdressKey);
-        manager.StartClient();
+        NetworkManager.singleton.networkAddress =
+            SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAdressKey);
+        NetworkManager.singleton.StartClient();
     }
-
-    private void OnLobbyDisconnected(SteamServersDisconnected_t callback)
-    {
-        Debug.Log("Steam sunucularıyla bağlantı kesildi. Sonuç: " + callback.m_eResult);
-    }
-
-    private void OnLobbyKicked(GSClientKick_t callback)
-    {
-        Debug.Log("Kicked from lobby.");
-    }
-
-    public void ApplicationQuit()
-    {
-        ApplicationQuit();
-    }
+    
 }

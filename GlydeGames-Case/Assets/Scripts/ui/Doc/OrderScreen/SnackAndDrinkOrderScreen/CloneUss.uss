@@ -1,0 +1,14 @@
+.my-element {
+    height: 150px;
+    margin-top: 100px;
+}
+.my-test {
+    width: 150px;
+    height: 150px;
+}
+
+.my-scroll-view > .unity-scroll-view__content-container {
+    height: 200px;
+    flex-direction: column; /* Elemanları dikey hizalar */
+    align-items: center; /* Elemanları ortalar */
+}

@@ -1,0 +1,47 @@
+.onlineOrderElement {
+    height: 75px;
+    width: 200px;
+    justify-content: space-around;
+    align-self: center;
+    align-items: center;
+    top: 15px;
+    bottom: 20px;
+    translate: 0 0;
+    margin-top: 5px;
+    margin-left: 0;
+    margin-bottom: 5px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+}
+
+.my-element {
+    width: 60px;
+    height: 60px;
+    left: 10px;
+}
+
+.viewSize_4 {
+    width: 360px;
+    height: 230px;
+}
+
+.viewSize_3 {
+    width: 360px;
+    height: 200px;
+}
+
+.viewSize_2 {
+    width: 360px;
+    height: 160px;
+}
+
+.viewSize {
+    width: 375px;
+    height: 120px;
+}

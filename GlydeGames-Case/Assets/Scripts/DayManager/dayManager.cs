@@ -6,16 +6,16 @@ using UnityEngine.UI;
 public class dayManager : NetworkBehaviour
 {
     public static dayManager instance;
+    public InGameHud _inGameHud;
     [SerializeField] private Light sun;
 
-    [SerializeField] [SyncVar]  private float sunRotationSpeed;
-    
-    [SerializeField]
-    private Gradient equatorColor;
+    [SerializeField] [SyncVar] private float sunRotationSpeed;
+
+    [SerializeField] private Gradient equatorColor;
 
     [SerializeField] private Gradient sunColor;
 
-    [SyncVar]  private float newRotation;
+    [SyncVar] private float newRotation;
     [SyncVar] private float currentRotation;
     private Quaternion startRotation;
     private Quaternion endRotation;
@@ -29,8 +29,13 @@ public class dayManager : NetworkBehaviour
     [SyncVar] public bool isHourOn;
     [SyncVar] public bool isdayFinished;
     [SyncVar] public int day;
-    [SyncVar] [SerializeField, Range(0, 24)] public int hour;
-    [SyncVar] [SerializeField, Range(0, 24)] public float timeOfDay;
+
+    [SyncVar] [SerializeField, Range(0, 24)]
+    public int hour;
+
+    [SyncVar] [SerializeField, Range(0, 24)]
+    public float timeOfDay;
+
     [SyncVar] public int minute;
     [SyncVar] public float minuteF;
 
@@ -45,6 +50,7 @@ public class dayManager : NetworkBehaviour
 
     void Start()
     {
+        instance = this;
         if (isServer)
         {
             ServerStart();
@@ -54,25 +60,22 @@ public class dayManager : NetworkBehaviour
     [Server]
     private void ServerStart()
     {
-        instance = this;
+        
+        day = CustomNetworkManager.instance.LastDay+1;
         isNightDay = false;
         hour = 08;
         timeOfDay = 8;
         minute = 00;
         sunRotationSpeed = 1;
-        RpcStart();
-    }  
-    [ClientRpc]
-    private void RpcStart()
-    {
-       // SleepingBg.gameObject.SetActive(false);
-        ///endDayCanvas.SetActive(false);
     }
+
     private void OnValidate()
     {
+        if(!isServer)return;
         UpdateSunRotation();
         UpdateLighting();
     }
+
     [Server]
     private void UpdateSunRotation()
     {
@@ -85,12 +88,14 @@ public class dayManager : NetworkBehaviour
     {
         sun.transform.rotation = Quaternion.Euler(sunRotation, sun.transform.rotation.y, sun.transform.rotation.z);
     }
+
     [Server]
     private void UpdateLighting()
     {
         float timeFraction = timeOfDay / 20;
         RpcLighting(timeFraction);
     }
+
     [ClientRpc]
     private void RpcLighting(float timeFraction)
     {
@@ -106,6 +111,7 @@ public class dayManager : NetworkBehaviour
             ServerUpdate();
         }
     }
+
     [Server]
     private void ServerUpdate()
     {
@@ -131,7 +137,7 @@ public class dayManager : NetworkBehaviour
             {
                 minuteF = 0;
                 hour++;
-                if (hour == 20)
+                if (hour == 23)
                 {
                     GameManager.instance.isDayOn = false;
                     hasRotated = false;
@@ -139,13 +145,14 @@ public class dayManager : NetworkBehaviour
                     minute = 0;
                     minuteF = 0;
                 }
+
                 hasRotated = false;
                 isHourOn = false;
             }
         }
         else
         {
-            if (hour == 20)
+            if (hour == 23)
             {
                 CustomerManager.instance.ServerListQueueState();
             }
@@ -164,20 +171,16 @@ public class dayManager : NetworkBehaviour
             sunRotationSpeed = 0;
         }
 
-        if (hour >= 17 || hour < 7)
+        if (hour >= 15 || hour < 07)
         {
             isNightDay = true;
-            //RenderSettings.skybox = skybox2;
-            //RenderSettings.skybox.Lerp(skybox2, skybox1, 100);
         }
         else
         {
             isNightDay = false;
-            //RenderSettings.skybox = skybox1.tintColor;
-            //RenderSettings.skybox.Lerp(skybox2, skybox1, 100000);
         }
     }
-    
+
     // zaman yazdırmak için
     [ClientRpc]
     private void HourPrint()
@@ -185,20 +188,48 @@ public class dayManager : NetworkBehaviour
         switch (minute)
         {
             case < 10:
-                MinuteText.text = "0" + minute.ToString();
+                _inGameHud.ServerTimeMinuteWrite("0" + minute);
                 break;
             case >= 10:
-                MinuteText.text = minute.ToString();
+                _inGameHud.ServerTimeMinuteWrite(minute.ToString());
                 break;
         }
 
         switch (hour)
         {
             case < 10:
-                HourText.text = "0" + hour.ToString();
+                _inGameHud.ServerTimeHourWrite("0" + hour.ToString());
                 break;
             case >= 10:
-                HourText.text = hour.ToString();
+                _inGameHud.ServerTimeHourWrite(hour.ToString());
+                break;
+        }
+        switch (day)
+        {
+            case 1 : 
+            case 2 :
+            case 3:
+                _inGameHud.ServerTimeDayWrite(day,3);
+                break;
+            case 4:
+            case 5:
+            case 6:
+                _inGameHud.ServerTimeDayWrite(day,6);
+                break;
+            case 7:
+            case 8:
+            case 9:
+                _inGameHud.ServerTimeDayWrite(day,9);
+                break;
+            case 10:
+            case 11:
+            case 12:
+                _inGameHud.ServerTimeDayWrite(day,12);
+                break;
+            case 13:
+            case 14:
+            case 15:
+                _inGameHud.ServerTimeDayWrite(day,15);
                 break;
         }
     }
@@ -214,30 +245,23 @@ public class dayManager : NetworkBehaviour
         if (Input.GetKey(KeyCode.Alpha1))
         {
             sunRotationSpeed = 1;
-            //isdayFinished = false;
-            //isDayOn = true;
         }
 
         if (Input.GetKey(KeyCode.Alpha2))
         {
             sunRotationSpeed = 2;
-            //isdayFinished = false;
-            //isDayOn = true;
         }
 
         if (Input.GetKey(KeyCode.Alpha3))
         {
             sunRotationSpeed = 3;
-            //isdayFinished = false;
-            //isDayOn = true;
         }
 
         if (Input.GetKey(KeyCode.Alpha4))
         {
-            sunRotationSpeed = 6;
-            //isdayFinished = false;
-            //isDayOn = true;
+            sunRotationSpeed = 15;
         }
+ 
     }
 
     // gün sonu

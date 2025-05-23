@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Schema;
 using DG.Tweening;
 using Mirror;
 using Unity.VisualScripting;
@@ -12,12 +13,16 @@ using Random = UnityEngine.Random;
 public class OrderItem
 {
     public string itemName;
-    public int quantity;
+    public string MealName;
+    public string DrinkName;
+    public string SnackName;
 
-    public OrderItem(string name, int qty)
+    public OrderItem(string name, string mealName, string drinkName, string snackName)
     {
         itemName = name;
-        quantity = qty;
+        MealName = mealName;
+        DrinkName = drinkName;
+        SnackName = snackName;
     }
 
     public override bool Equals(object obj)
@@ -39,16 +44,16 @@ public class OrderItem
 
 public class Customer : NetworkBehaviour
 {
+    public CustomerOrderPanel orderPanel;
     [Header("View")] [SyncVar] public int AppearanceValue;
     public List<GameObject> Appearance = new List<GameObject>();
 
     [Header("Orders")] [SyncVar] public bool WaitingForOrder;
     [SyncVar] public int OrderCount;
+    public Datas RecipeData;
     public List<OrderItem> orderItems = new List<OrderItem>();
-    public ScribtableOrderItem scribtableOrderItem;
 
     [Header("Transforms")] public Transform OrderStayPos;
-    public Transform CashRegisterStayPos;
     public Transform Hand;
 
     [Header("Agent & Anim")] public Animator anims;
@@ -58,11 +63,25 @@ public class Customer : NetworkBehaviour
 
     public Vector3 TargetPos;
     [SyncVar] public int customerQueue;
+    [SyncVar] public bool isEat;
+    [SyncVar] public bool isChair;
+    [SyncVar] public bool isToilet;
+    [SyncVar] public bool GoToToilet;
+    public GameObject ChairSelected;
+    public GameObject ToiletSelected;
+    public Transform LeaveSelected;
 
-    [Header("Random Pos")] public float minX = -5;
-    public float maxX = 5f;
-    public float minZ = -5f;
-    public float maxZ = 5f;
+    // oturup bekleme süresi
+    [SyncVar] public float SitTime;
+    [SyncVar] public float MaxSitTime;
+
+    // tuvalet bekleme süresi
+    [SyncVar] public float ToiletTime;
+    [SyncVar] public float MaxToiletTime;
+
+    // yeme süresi belirleme
+    [SyncVar] public float eatTime;
+    [SyncVar] public float MaxeatTime;
 
     [Header("Wait Time")] [SyncVar] public float OrderWaitTimer;
 
@@ -76,6 +95,18 @@ public class Customer : NetworkBehaviour
     [Header("Data")] [SerializeField] public DailyStatistics dailyStatistics;
 
     [SyncVar] public int HappySystem;
+
+    public TrayInteract _TrayInteract;
+    public Tray _Tray;
+
+    public BurgerScreen _BurgerScreen;
+    public SnackScreen _SnackScreen;
+
+    [SyncVar] private bool Change1;
+    [SyncVar] private bool Change2;
+    [SyncVar] private bool Change3;
+
+    [SyncVar] private float OrderValue;
 
     void Start()
     {
@@ -91,10 +122,35 @@ public class Customer : NetworkBehaviour
     [Server]
     private void ServerStart()
     {
-        WaitingForOrder = true;
         RpcStart();
         ServerAppiranceValue(); // görünüm ayarlama
         ServerSelectOrder(); // sipariş Seçimi
+        //randomToilet(); // tuvalet durumu olacak mı
+    }
+
+    private void randomToilet()
+    {
+        if (CustomerManager.instance.Toilet.Count > 0)
+        {
+            int randomInt = Random.Range(5, 5);
+            if (randomInt == 5)
+            {
+                isToilet = true;
+                RandomToiletPosSelect();
+            }
+        }
+        else
+        {
+            isToilet = false;
+        }
+    }
+
+    [ClientRpc]
+    private void RandomToiletPosSelect()
+    {
+        int randomToilet = Random.Range(0, CustomerManager.instance.Toilet.Count);
+        ToiletSelected = CustomerManager.instance.Toilet[randomToilet];
+        CustomerManager.instance.RemoveToilet(ToiletSelected);
     }
 
     [ClientRpc]
@@ -103,7 +159,16 @@ public class Customer : NetworkBehaviour
         CustomerAgent = GetComponent<NavMeshAgent>();
 
         OrderStayPos = GameObject.FindWithTag("OrderStayPos").transform;
-        CashRegisterStayPos = GameObject.FindWithTag("CashRegisterrStayPos").transform;
+        TargetPos = OrderStayPos.position;
+        isStop = true;
+
+        GameObject BurgermonitorObj = GameObject.Find("BurgerMonitor");
+        _BurgerScreen = BurgermonitorObj.GetComponent<BurgerScreen>();
+
+        GameObject SnackmonitorObj = GameObject.Find("DrinkAndSnackMonitor");
+        _SnackScreen = SnackmonitorObj.GetComponent<SnackScreen>();
+
+        this.transform.SetParent(null);
     }
 
     // görünümü ata (Server)
@@ -122,19 +187,21 @@ public class Customer : NetworkBehaviour
     // Sipariş seç (Server)
     void ServerSelectOrder()
     {
-        OrderCount = Random.Range(1, scribtableOrderItem.OrderItemName.Length + 1);
-        for (int i = 0; i < OrderCount; i++)
+        OrderCount = Random.Range(1, RecipeData._MenuDatas.Length + 1);
+        for (int i = 0; i < 1; i++)
         {
-            int OrderSelectName = Random.Range(0, scribtableOrderItem.OrderItemName.Length);
-            int OrderSelectNumber = Random.Range(1, 3);
-            AddOrderItem(scribtableOrderItem.OrderItemName[OrderSelectName], OrderSelectNumber);
+            int OrderSelectName = Random.Range(0, RecipeData._MenuDatas.Length);
+            //int OrderSelectNumber = Random.Range(1, 3);
+            int OrderSelectNumber = 1;
+            AddOrderItem(RecipeData._MenuDatas[OrderSelectName]._name, RecipeData._MenuDatas[OrderSelectName]._MealName,
+                RecipeData._MenuDatas[OrderSelectName]._DrinkName, RecipeData._MenuDatas[OrderSelectName]._SnackName);
         }
     }
 
     [ClientRpc] // liste ekleme clientler için
-    public void AddOrderItem(string itemName, int quantity)
+    public void AddOrderItem(string itemName, string mealName, string drinkName, string snackName)
     {
-        var newItem = new OrderItem(itemName, quantity);
+        var newItem = new OrderItem(itemName, mealName, drinkName, snackName);
 
         orderItems.RemoveAll(item => item.Equals(newItem));
 
@@ -146,6 +213,7 @@ public class Customer : NetworkBehaviour
         if (isServer)
         {
             ServerGoToPos();
+            isChairValue();
         }
     }
 
@@ -155,43 +223,167 @@ public class Customer : NetworkBehaviour
         if (TargetPos != null)
         {
             float stoppingDistance = Vector3.Distance(TargetPos, transform.position);
-            if (stoppingDistance <= 0.3f)
+            if (stoppingDistance <= 0.5f)
             {
-                RpcTakeProduct(TargetPos);
-                CustomerAgent.isStopped = true;
-                anims.SetBool("isWalk", false);
-                isStop = true;
+                if (isChair)
+                {
+                    CustomerAgent.isStopped = true;
+                    anims.SetBool("isWalk", false);
+                    isStop = true;
+                }
+            }
+            else if (stoppingDistance <= 1.5f)
+            {
+                if (!isStop)
+                {
+                    CustomerAgent.isStopped = true;
+                    anims.SetBool("isWalk", false);
+                    isStop = true;
+                }
             }
             else
             {
-                CustomerAgent.isStopped = false;
-                CustomerAgent.SetDestination(TargetPos);
-                anims.SetBool("isWalk", true);
-                isStop = false;
+                if (isStop)
+                {
+                    WaitingForOrder = false;
+                    CustomerAgent.isStopped = false;
+                    CustomerAgent.SetDestination(TargetPos);
+                    anims.SetBool("isSit", false);
+                    anims.SetBool("isWalk", true);
+                    isStop = false;
+                }
             }
 
             // bitiş ve yok oluş
             if (isFinish)
             {
-                if (stoppingDistance < 0.3f)
+                if (stoppingDistance < 3f)
                 {
+                    CustomerManager.instance.CustomersList.Remove(gameObject);
                     Destroy(gameObject);
                 }
             }
         }
     }
 
-    [ClientRpc]
-    private void RpcTakeProduct(Vector3 Pos)
+    [Server]
+    private void isChairValue()
     {
-        if (orderItems.Count == 0) return;
+        if (isStop)
+        {
+            if (isChair || isEat)
+            {
+                OneFunction();
+                //  yeme süresi belirleme
+                if (isEat)
+                {
+                    if (eatTime > MaxeatTime)
+                    {
+                        OneFunction2();
+                    }
+                    else
+                    {
+                        eatTime += Time.deltaTime;
+                    }
+                }
+                else
+                {
+                    //  bekleme süresi
+                    if (SitTime > MaxSitTime)
+                    {
+                        OneFunction3();
+                    }
+                    else
+                    {
+                        SitTime += Time.deltaTime;
+                        orderPanel.Slider.maxValue = MaxSitTime;
+                        orderPanel.Slider.value = SitTime;
+                    }
+                }
+            }
+            else
+            {
+                orderPanel.Slider.maxValue = OrderWaitMin;
+                orderPanel.Slider.value = OrderWaitTimer;
+                if (OrderWaitTimer >= OrderWaitMin)
+                {
+                    RandomPosSelectto();
+                }
+            }
+        }
+    }
 
-        Quaternion targetRotation = Quaternion.LookRotation(Pos);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime);
+    private void OneFunction()
+    {
+        if (!Change1)
+        {
+            CustomerAgent.isStopped = true;
+            RpcCustomPos();
+            RpcRot();
+            anims.SetBool("isSit", true);
+            WaitingForOrder = true;
+            Change1 = true;
+        }
+    }
+
+    [ClientRpc]
+    private void RpcCustomPos()
+    {
+        this.transform.position = ChairSelected.transform.position;
+    }
+
+    private void OneFunction2()
+    {
+        if (!Change2)
+        {
+            anims.SetBool("isEating", false); // yeme animasyonu olacak
+            RandomPosSelectto();
+            _TrayInteract.ServerStateChange(false);
+            _TrayInteract.RpcChairAdd(ChairSelected);
+            _Tray._name = null;
+            isChair = false;
+            isEat = false;
+            //RpcName();
+            isStop = true;
+            Change2 = true;
+        }
+    }
+
+    private void OneFunction3()
+    {
+        if (!Change3)
+        {
+            RpcName();
+            RandomPosSelectto();
+            GameManager.instance.MoneyAddAndRemove(false, OrderValue * 2, false, new ScrollView());
+            CustomerManager.instance.AddChairs(ChairSelected);
+            anims.SetBool("isSit", false);
+            anims.SetBool("isWalk", true);
+            isStop = true;
+            Change3 = true;
+        }
+    }
+
+
+    [ClientRpc]
+    private void RpcName()
+    {
+        foreach (var names in orderItems)
+        {
+                _BurgerScreen.ListRemoveOnlineOff(names.MealName);
+                _SnackScreen.ListRemoveOnlineOff(names.DrinkName);
+                _SnackScreen.ListRemoveOnlineOff(names.SnackName);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcRot()
+    {
+        transform.rotation = ChairSelected.transform.rotation;
     }
 
     [Server]
-    private void ServerSelectGoPos() // start da çalışıyor
+    public void ServerSelectGoPos() // start da çalışıyor
     {
         RpcSelectOrderStayGoPos();
     }
@@ -201,128 +393,117 @@ public class Customer : NetworkBehaviour
     {
         if (orderItems.Count > 0)
         {
-            //TargetPos = OrderStayPos.position + new Vector3(-CustomerManager.instance.OrderStayQueue.Count, 0, 0);
-            TargetPos = OrderStayPos.position + new Vector3(-customerQueue, 0, 0);
+            TargetPos = OrderStayPos.position + new Vector3(customerQueue, 0, 0);
         }
     }
 
-    [ClientRpc]
-    public void RpcSelectCashRegisterGoPos()
-    {
-        if (orderItems.Count > 0)
-        {
-            //TargetPos = OrderStayPos.position + new Vector3(-CustomerManager.instance.OrderStayQueue.Count, 0, 0);
-            TargetPos = CashRegisterStayPos.position + new Vector3(-customerQueue, 0, 0);
-        }
-    }
-
-    public void
-        PlayerGiveProduct(GameObject PlayerHandObj, GameObject player) // player Interact Çağırılır sipariş teslimi
+    public void PlayerGiveProduct(GameObject PlayerHandObj, GameObject player) // sipariş teslimi
     {
         if (WaitingForOrder)
         {
-            ItemPacket packet = PlayerHandObj.GetComponent<ItemPacket>();
+            Tray packet = PlayerHandObj.GetComponent<Tray>();
+            _TrayInteract = PlayerHandObj.GetComponent<TrayInteract>();
+            _Tray = packet;
             foreach (var orderItem in orderItems)
             {
-                foreach (var packetItem in packet.orderItems)
+                if (packet._name == orderItem.itemName)
                 {
-                    if (packetItem.itemName == orderItem.itemName)
+                    switch (HappySystem)
                     {
-                        if (packetItem.quantity == orderItem.quantity)
-                        {
-                            CustomerManager.instance.ServerQueueMove();
-
-                            // teslim sonrası player işlemi
-                            player.GetComponent<PlayerInteract>().HandFullTest(false);
-                            player.GetComponent<PlayerInteract>().isHandRightTrue = false;
-                            player.GetComponent<PlayerInteract>().HandObj = null;
-
-                            // teslim sonrası player işlemi
-                            PlayerHandObj.transform.SetParent(null);
-                            PlayerHandObj.transform.DOMove(Hand.position, 0.6f)
-                                .OnComplete(() => ComplitePlayerGiveProduct(PlayerHandObj));
-                            WaitingForOrder = false;
-                        }
+                        case 3:
+                            dailyStatistics.ServerCustomerSatisfactionCountAdd(0, 0, 1);
+                            break;
+                        case 2:
+                            dailyStatistics.ServerCustomerSatisfactionCountAdd(0, 1, 0);
+                            break;
+                        case 1:
+                            dailyStatistics.ServerCustomerSatisfactionCountAdd(1, 0, 0);
+                            break;
                     }
+
+                    // teslim sonrası player işlemi
+                    player.GetComponent<PlayerInteract>().HandFullTest(false);
+                    player.GetComponent<PlayerInteract>().isHandRightTrue = false;
+                    player.GetComponent<PlayerInteract>().InteractObj = null;
+
+                    // teslim sonrası player işlemi
+                    PlayerHandObj.transform.SetParent(null);
+                    PlayerHandObj.transform.localRotation = Quaternion.identity;
+                    PlayerHandObj.GetComponent<TrayInteract>().isInteract = false;
+                    PlayerHandObj.GetComponent<TrayInteract>().collider.enabled = false;
+                    PlayerHandObj.GetComponent<Tray>().Trash();
+                    PlayerHandObj.transform.DOMove(Hand.position, 0.6f)
+                        .OnComplete(() => ComplitePlayerGiveProduct());
                 }
             }
         }
     }
 
-    private void ComplitePlayerGiveProduct(GameObject PlayerHandObj)
+    private void ComplitePlayerGiveProduct()
     {
-        CustomerManager.instance.CashRegisterQueue.Add(gameObject);
-        CustomerManager.instance.OrderStayQueue.Remove(gameObject);
-
-
-        TargetPos = CashRegisterStayPos.position + new Vector3(-CustomerManager.instance.CashRegisterQueue.Count, 0, 0);
-        Destroy(PlayerHandObj);
-        CustomerManager.instance.ServerCashQueue(gameObject);
-        WaitingForOrder = false;
+        RpcName();
+        anims.SetBool("isEating", true); // yeme animasyonu olacak
+        isEat = true;
     }
 
     // Cash System
-    [Server]
-    public void CashRegisterProduct(GameObject CashObj, ScrollView BuyCardItemList,Label TotalAmountText)
+    //[Server]
+    public void CashRegisterProduct(GameObject CashObj, ScrollView BuyCardItemList, Label TotalAmountText)
     {
         RegisterAddToCartManager Cash = CashObj.GetComponent<RegisterAddToCartManager>();
-        print(Cash.ItemCardItemList.Count);
-        foreach (var orderItem in orderItems)
+
+        if (Cash.isFood && Cash.isDrink && Cash.isSnack)
         {
-            foreach (var RegisterItem in Cash.ItemCardItemList)
-            {
-                if (RegisterItem.name == orderItem.itemName)
-                {
-                    if (RegisterItem.currentAmount == orderItem.quantity)
-                    {
-                        RegisterAddToCartManager.instance.buycardAmountChange(TotalAmountText);
-                        RandomPosSelectto();
-                        
-                        // sipariş onaylanınca kartların silinmesi
-                        CustomerManager.instance.ServerCashQueueMove();
-                        
-                        Cash.ItemCardItemList.Clear();
-                        Cash.BuyCardItemList.Clear();
-                        Cash.BuyProductItemList.Clear();
-                        BuyCardItemList.Clear();
-                        
-                        print(HappySystem);
-                        switch (HappySystem)
-                        {
-                            case 3:
-                                dailyStatistics.ServerCustomerSatisfactionCountAdd(0, 0, 1);
-                                break;
-                            case 2:
-                                dailyStatistics.ServerCustomerSatisfactionCountAdd(0, 1, 0);
-                                break;
-                            case 1:
-                                dailyStatistics.ServerCustomerSatisfactionCountAdd(1, 0, 0);
-                                break;
-                        }
-                        break;
-                        
-                    }
-                }
-                else
-                {
-                    print("sipariş yanlış");
-                }
-            }
+            RegisterAddToCartManager.instance.buycardAmountChange(TotalAmountText);
+
+            Cash.ItemCardItemList.Clear();
+            Cash.BuyCardItemList.Clear();
+            Cash.BuyProductItemList.Clear();
+            BuyCardItemList.Clear();
+            Cash.isFood = false;
+            Cash.isDrink = false;
+            Cash.isSnack = false;
+
+            CustomerManager.instance.OrderStayQueue.Remove(gameObject);
+            int randomChair = Random.Range(0, CustomerManager.instance.Chairs.Count);
+            CustomGoToChair(randomChair);
+            // sipariş onaylanınca kartların silinmesi
+            CustomerManager.instance.ServerCashQueueMove();
+            CustomerManager.instance.ServerQueueMove();
         }
+    }
+
+    // [ClientRpc]
+    private void CustomGoToChair(int randomChair)
+    {
+        ChairSelected = CustomerManager.instance.Chairs[randomChair];
+        CustomerManager.instance.RemoveChairs(ChairSelected);
+
+        TargetPos = ChairSelected.transform.position;
+
+        isChair = true;
+        isStop = true;
     }
 
     [Server]
     private void RandomPosSelectto()
     {
+        RpcPanel();
         CustomerAgent.isStopped = false;
-        float randomX = Random.Range(minX, maxX);
-        float randomZ = Random.Range(minZ, maxZ);
-        TargetPos = new Vector3(randomX, TargetPos.y, randomZ);
-        if (TargetPos != null)
+
+        TargetPos = LeaveSelected.position;
+        isFinish = true;
+        if (!isChair)
         {
-            CustomerAgent.SetDestination(TargetPos);
-            isFinish = true;
+            CustomerManager.instance.OrderStayQueue.Remove(gameObject);
+            CustomerManager.instance.ServerQueueMoveRemove();
         }
+    }
+
+    [ClientRpc]
+    private void RpcPanel()
+    {
+        orderPanel.Canvas.SetActive(false);
     }
 
     [Server]
@@ -331,7 +512,7 @@ public class Customer : NetworkBehaviour
         OrderWaitTimer += Time.deltaTime;
         if (OrderWaitTimer < OrderWaitMin)
         {
-            HappySystem = 3;
+            HappySystem = 1;
         }
         else if (OrderWaitTimer > OrderWaitMin && OrderWaitTimer < OrderWaitMax)
         {
@@ -339,23 +520,13 @@ public class Customer : NetworkBehaviour
         }
         else if (OrderWaitTimer > OrderWaitMin && OrderWaitTimer > OrderWaitMax)
         {
-            HappySystem = 1;
+            HappySystem = 3;
         }
+    }
 
-        // if (OrderWaitTimer > OrderWaitTimeHappy)
-        // {
-        //     HappySystem = 3;
-        //     print("NİCEEE");
-        // }
-        // else if (OrderWaitTimer > OrderWaitNormal)
-        // {
-        //     HappySystem = 2;
-        //     print("EH İŞTE YAPACAK BİŞEY YOK");
-        // }
-        // else if(OrderWaitTimer > OrderWaitSad)
-        // {
-        //     HappySystem = 1;
-        //     print("YARRAK GİBİ SİPARİŞ AQ YA");
-        // }
+    [Server]
+    public void ServerOrderValueChange(float valye)
+    {
+        OrderValue += valye;
     }
 }

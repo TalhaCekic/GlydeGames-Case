@@ -4,19 +4,8 @@ using UnityEngine;
 public class LearnRecipeManager : NetworkBehaviour
 {
     public static LearnRecipeManager instance;
-    public RecipeDataList _ScribtableLearnRecipe;
+    public Datas _ScribtableLearnRecipe;
     
-    // public override void OnStartServer()
-    // {
-    //     base.OnStartServer();
-    //     _PcCanvas.isReadyLearnedStart();
-    // }
-    //
-    // public override void OnStartClient()
-    // {
-    //     base.OnStartClient();
-    //     _PcCanvas.isReadyLearnedStart();
-    // }
     void Start()
     {
         instance = this;

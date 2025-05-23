@@ -4,6 +4,7 @@ using System.Threading.Tasks.Sources;
 using Mirror;
 using UnityEngine;
 using DG.Tweening;
+using Unity.Mathematics;
 using UnityEngine.Rendering;
 
 public class Shelf : NetworkBehaviour
@@ -78,13 +79,10 @@ public class Shelf : NetworkBehaviour
     }
     void PlayerOnProductPlaced(GameObject product, Transform Pos, Transform itemsObjPos,Transform RightPos, Transform RightRot, Transform LeftPos, Transform LeftRot)
     {
-        //product.transform.SetParent(itemsObjPos);
         product.GetComponent<ItemInteract>().enabled = true;
+        product.transform.rotation = Quaternion.Euler(-90,0,0);
         product.GetComponent<ItemInteract>().ItemParentObj( itemsObjPos);
-        product.GetComponent<ItemInteract>().HandSystem(RightPos, RightRot, LeftPos, LeftRot);
-        // product.transform.parent = itemsObjPos;
-        // product.transform.rotation = itemsObjPos.rotation;
-        // product.transform.position = Pos.transform.position;
+       // product.GetComponent<ItemInteract>().HandSystem(RightPos, RightRot, LeftPos, LeftRot);
     }
     
     // kutu eylemleri için
@@ -122,10 +120,10 @@ public class Shelf : NetworkBehaviour
 
     
     void OnProductPlaced(GameObject product, Transform Pos, Transform itemsObjPos)
-    {
+    { 
         //product.transform.SetParent(itemsObjPos);
        product.transform.parent = itemsObjPos;
-       product.transform.rotation = itemsObjPos.rotation;
+       product.transform.rotation = Quaternion.Euler(90,0,0);
        product.transform.position = Pos.transform.position;
     }
 }

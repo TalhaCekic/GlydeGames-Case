@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Dreamteck.Splines.Primitives;
 using Mirror;
 using Steamworks;
 using TMPro;
@@ -35,7 +36,7 @@ public class LobbyController : NetworkBehaviour
 
     [SyncVar] public bool AllReady;
     [SyncVar] public float nextDelay;
-    
+
     private CustomNetworkManager Manager
     {
         get
@@ -51,11 +52,35 @@ public class LobbyController : NetworkBehaviour
     void Awake()
     {
         Instance = this;
+       // this.gameObject.SetActive(true);
+        ServerStart();
     }
+
+    private void Start()
+    {
+       // if(!isServer)return;
+        ServerStart();
+    }
+
+    [Server]
+    private void ServerStart()
+    {
+        RpcStart();
+    }
+    [ClientRpc]
+    private void RpcStart()
+    {
+        if(steamLobby !=null)return;
+        //GameObject steam = GameObject.FindGameObjectWithTag("NetworkManager");
+      //  steamLobby = steam.GetComponent<SteamLobby>();
+        steamLobby = SteamLobby.instance;
+    }
+
     public void InvitePlayer()
     {
         steamLobby.InviteButton();
     }
+
     public void ReadyPlayer()
     {
         LocalPlayerController.ChangeReady();
@@ -65,21 +90,18 @@ public class LobbyController : NetworkBehaviour
     {
         if (LocalPlayerController.Ready)
         {
-            MainMenuCanvas.instance.ReadyButton.text =ReadyString ;
+            MainMenuCanvas.instance.ReadyButton.text = ReadyString;
             MainMenuCanvas.instance.ReadyButton.style.color = Color.green;
-            //ReadyButtonText.text = UnreadyString;
         }
         else
         {
             MainMenuCanvas.instance.ReadyButton.text = UnreadyString;
             MainMenuCanvas.instance.ReadyButton.style.color = Color.red;
-           // ReadyButtonText.text = ReadyString;
         }
     }
 
     public void CheckIfAllReady()
     {
-       // bool AllReady = false;
         if (PlayerListItem.Count == ReadyPlayerCount)
         {
             AllReady = true;
@@ -96,6 +118,7 @@ public class LobbyController : NetworkBehaviour
         if (isServer)
         {
             StateReadyNextScene();
+            ServerStart();
         }
     }
 
@@ -105,10 +128,9 @@ public class LobbyController : NetworkBehaviour
         if (AllReady)
         {
             nextDelay += Time.deltaTime;
-            if (nextDelay > 3)
+            if (nextDelay > 2)
             {
-                //RpcStateReadySceneNextScene();
-                SteamLobby.instance.NextScene();               
+                SteamLobby.instance.NextScene();
                 if (nextDelay > 6f)
                 {
                     //SteamLobby.instance.NextScene();
@@ -117,15 +139,9 @@ public class LobbyController : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    private void RpcStateReadySceneNextScene()
-    {
-        LoadingScreen.instance.LoadScreen();
-    }
-
     public void UpdateLobbyName()
     {
-        CurrentLobbyID = Manager.GetComponent<SteamLobby>().currentLobbyID;
+        CurrentLobbyID = SteamLobby.instance.currentLobbyID;
         //LobbyNameText.text = SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name");
     }
 
@@ -172,12 +188,13 @@ public class LobbyController : NetworkBehaviour
             NewPlayerItemScript.SetPlayerValues();
 
             NewPlayerItem.transform.SetParent(player.PlayerListViewContant.transform);
-            NewPlayerItem.transform.localScale = new Vector3(0.005f,0.005f,0.005f);
+            NewPlayerItem.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
             NewPlayerItem.transform.position = player.PlayerListViewContant.transform.position;
-            NewPlayerItem.transform.localRotation = new Quaternion(0,180,0,0);
+            NewPlayerItem.transform.localRotation = new Quaternion(0, 180, 0, 0);
 
             PlayerListItem.Add(NewPlayerItemScript);
         }
+
         PlayerItemCreated = true;
     }
 
@@ -189,7 +206,7 @@ public class LobbyController : NetworkBehaviour
             {
                 GameObject NewPlayerItem = Instantiate(PlayerListItemPrefab) as GameObject;
                 PlayerListItem NewPlayerItemScript = NewPlayerItem.GetComponent<PlayerListItem>();
-                
+
                 NewPlayerItemScript.PlayerName = player.PlayerName;
                 NewPlayerItemScript.ConnectionID = player.ConnectionID;
                 NewPlayerItemScript.PlayerSteamID = player.PlayerSteamID;
@@ -197,9 +214,9 @@ public class LobbyController : NetworkBehaviour
                 NewPlayerItemScript.SetPlayerValues();
 
                 NewPlayerItem.transform.SetParent(player.PlayerListViewContant.transform);
-                NewPlayerItem.transform.localScale = new Vector3(0.005f,0.005f,0.005f);
+                NewPlayerItem.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
                 NewPlayerItem.transform.position = player.PlayerListViewContant.transform.position;
-                NewPlayerItem.transform.localRotation = new Quaternion(0,180,0,0);
+                NewPlayerItem.transform.localRotation = new Quaternion(0, 180, 0, 0);
 
                 PlayerListItem.Add(NewPlayerItemScript);
                 CheckIfAllReady();
@@ -227,35 +244,34 @@ public class LobbyController : NetworkBehaviour
 
     public void RemovePlayerItem()
     {
-        if (SceneManager.GetActiveScene().buildIndex == 0)
+        if(SteamLobby.instance.currentLobbyID==0)return;
+        List<PlayerListItem> playerListItemToRemove = new List<PlayerListItem>();
+
+        foreach (PlayerListItem playerList in PlayerListItem)
         {
-            List<PlayerListItem> playerListItemToRemove = new List<PlayerListItem>();
-
-            foreach (PlayerListItem playerList in PlayerListItem)
+            if (!Manager.GamePlayers.Any(b => b.ConnectionID == playerList.ConnectionID))
             {
-                if (!Manager.GamePlayers.Any(b => b.ConnectionID == playerList.ConnectionID))
-                {
-                    playerListItemToRemove.Add(playerList);
-                }
+                playerListItemToRemove.Add(playerList);
             }
+        }
 
-            if (playerListItemToRemove.Count > 0)
+        if (playerListItemToRemove.Count > 0)
+        {
+            foreach (PlayerListItem PlayerListItemRemove in playerListItemToRemove)
             {
-                foreach (PlayerListItem PlayerListItemRemove in playerListItemToRemove)
+                GameObject ObjectToRemove = PlayerListItemRemove.gameObject;
+                //PlayerListItemRemove.isReady = false;
+                if (PlayerListItemRemove.isReady)
                 {
-                    GameObject ObjectToRemove = PlayerListItemRemove.gameObject;
-                    //PlayerListItemRemove.isReady = false;
-                    if (PlayerListItemRemove.isReady)
-                    {
-                        ReadyPlayerCount--;
-                    }
-                    //print(PlayerListItemRemove.isReady);
-                    //CheckIfAllReady();
-                    //ReadyPlayer();
-                    PlayerListItem.Remove(PlayerListItemRemove);
-                    Destroy(ObjectToRemove);
-                    ObjectToRemove = null;
+                    ReadyPlayerCount--;
                 }
+
+                //print(PlayerListItemRemove.isReady);
+                //CheckIfAllReady();
+                //ReadyPlayer();
+                PlayerListItem.Remove(PlayerListItemRemove);
+                Destroy(ObjectToRemove);
+                ObjectToRemove = null;
             }
         }
     }

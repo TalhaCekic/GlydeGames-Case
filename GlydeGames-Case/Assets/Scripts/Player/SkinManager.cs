@@ -51,19 +51,5 @@ public class SkinManager : NetworkBehaviour
         SteamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, Manager.GamePlayers.Count);
         //RpcSkin(SteamID);
     }
-    [ClientRpc]
-    private void RpcSkin(ulong steamId) {
-        if (steamId == Manager.ToficID)
-        {
-            print("tofic");
-        }
-        else if (steamId == Manager.TalosID)
-        {
-            TalosSkin.SetActive(true);
-        }
-        else
-        {
-            DefaultSkin.SetActive(true);
-        }
-    }
+
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Mirror.Examples.TanksCoop
+namespace Mirror.Examples.TankTheftAuto
 {
     public class TankController : NetworkBehaviour
     {
@@ -96,6 +96,14 @@ namespace Mirror.Examples.TanksCoop
                 if (playerController) { playerController.canControlPlayer = true; }
             }
 
+        }
+
+        public override void OnStopServer()
+        {
+            // To prevent a bug that can be caused on client host, when scenes do not reset during play,
+            // tank variables are set as "missing", which Unity does not count as null/empty.
+            objectOwner = null;
+            playerController = null;
         }
     }
 }

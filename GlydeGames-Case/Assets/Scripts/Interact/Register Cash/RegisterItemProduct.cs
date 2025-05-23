@@ -9,72 +9,104 @@ public class RegisterItemProduct : NetworkBehaviour
 {
 	[Header("Scripts Data")] 
 	public RegisterAddToCartManager registerAddToCartManager;
+    public CustomerManager _customerManager;
+    public RegisterAddToCartManager _registerAddToCartManager;
+
 	[SyncVar] public bool isItemAlreadyAdded; 
 
     [SyncVar] public int _totalAmount;
 	
-	public RecipeDataList[] CategoryDataList;
+	public Datas CategoryDataList;
 
-	//[Server]
-    public void AddCart(int index, int categoryIndex, VisualElement Cart, VisualTreeAsset _template, ScrollView CartList, int _amount, Label _totalAmountLabel, List<Button> _cartDeleteCardButton)
+    public BurgerScreen _BurgerScreen;
+    public SnackScreen _SnackScreen;
+
+    public void AddCart(int index, VisualElement Cart, VisualTreeAsset _template,
+        ScrollView CartList, int _amount, Label _totalAmountLabel, List<Button> _cartDeleteCardButton, string name,Texture2D avatar,int sellValue,int categoryIndex)
     {
-        isItemAlreadyAdded = registerAddToCartManager.ItemCardItemList.Exists(item => item.name == CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._name);
-
+        isItemAlreadyAdded = registerAddToCartManager.ItemCardItemList.Exists(item => item.name == CategoryDataList._categoryData[index]._name);
+        
         if (!isItemAlreadyAdded || registerAddToCartManager.BuyCardItemList.Count == 0)
         {
             Cart = _template.CloneTree();
-
+        
             Cart.Q<VisualElement>("CardToCart"); // Sepetteki kartı bul
             Label CardName = Cart.Q<Label>("CardNameText"); // isim  text bul
             Label TotalAmount = Cart.Q<Label>("TotalAmountTText"); // Toplam Tutar Text bul
             VisualElement Avatar = Cart.Q<VisualElement>("Avatar"); // avatar bul
-
-            Cart.name = CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._name;
-            CardName.text = _amount + " " + CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._name;
-            TotalAmount.text = CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._sellAmount.ToString();
-            Avatar.style.backgroundImage = CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._ımage;
-
+        
+            Cart.name = name;
+            CardName.text = _amount + " " + name;
+            int newPurchaseAmount = sellValue * _amount;
+            TotalAmount.text = newPurchaseAmount.ToString();
+            Avatar.style.backgroundImage = avatar;
+        
             //TOTAL PARA EKLER
-            _totalAmount += CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._sellAmount * _amount;
+            _totalAmount += sellValue * _amount;
             _totalAmountLabel.text = _totalAmount.ToString();
-
+        
             CartList.Add(Cart);
-
+            
+            switch (categoryIndex)
+            {
+                case 0:
+                    _BurgerScreen.AddCart(name,false,0);
+                    break;
+                case 1:
+                    _SnackScreen.AddCart(name,false,0);
+                    break;
+                case 2:
+                    _SnackScreen.AddCart(name,false,0);
+                    break;
+            }
+            
+        
             registerAddToCartManager.BuyCardItemList.Add(Cart);
-            //registerAddToCartManager.BuyProductItemList.Add(CategoryDataList[categoryIndex].Objs[index]);
-            registerAddToCartManager.ItemCardItemList.Add(new RegisterItem(CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._name, CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._sellAmount, _amount,
-                CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._sellAmount));
-            // silme butonu eklenir
-            Button cartDeleteCardButton = Cart.Q<Button>("DeleteButtons"); // silme butonu bul
-            cartDeleteCardButton.name = CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._name;
-            _cartDeleteCardButton.Add(cartDeleteCardButton);
+            registerAddToCartManager.ItemCardItemList.Add(new RegisterItem(name, sellValue, _amount, newPurchaseAmount));
+                
+            foreach (var orderItem in _customerManager.OrderStayQueue[0].GetComponent<Customer>().orderItems)
+            {
+                foreach (var RegisterItem in _registerAddToCartManager.BuyCardItemList)
+                {
+                    if (RegisterItem.name.Contains(orderItem.MealName))
+                    {
+                        _registerAddToCartManager.isFood = true;
+                    }
+
+                    if (RegisterItem.name.Contains(orderItem.DrinkName))
+                    {
+                        _registerAddToCartManager.isDrink = true;
+                    }
+
+                    if (RegisterItem.name.Contains(orderItem.SnackName))
+                    {
+                        _registerAddToCartManager.isSnack = true;
+                    }
+                }
+            }
         }
         else
         {
             foreach (VisualElement element in registerAddToCartManager.BuyCardItemList)
             {
-                if (element.name == CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._name)
+                if (element.name == name)
                 {
                     foreach (var item in registerAddToCartManager.ItemCardItemList)
                     {
                         if (element.name == item.name)
                         {
                             item.currentAmount += _amount;
-                            item.TotalCardAmount = item.currentAmount * CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._sellAmount;
-
-                            print(item.currentAmount);
-
+                            item.TotalCardAmount = item.currentAmount * sellValue;
+                            
                             Label CardName = element.Q<Label>("CardNameText"); // isim  text bul
                             Label TotalAmount = element.Q<Label>("TotalAmountTText"); // Toplam Tutar Text bul
-
-                            CardName.text = item.currentAmount + " " + CategoryDataList[categoryIndex]._ScribtableLearnableItems[index]._name;
+        
+                            CardName.text = item.currentAmount + " " + name;
                             TotalAmount.text = item.TotalCardAmount.ToString();
-
+        
                             //TOTAL PARA EKLER
                             _totalAmount += item.saleAmount * _amount;
                             _totalAmountLabel.text = _totalAmount.ToString();
-
-                           // registerAddToCartManager.BuyProductItemList.Add(CategoryDataList[categoryIndex].Objs[index]);
                             break;
                         }
                     }

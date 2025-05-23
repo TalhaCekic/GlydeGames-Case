@@ -32,20 +32,14 @@ public class RegisterAddToCartManager : NetworkBehaviour
     public ProductItem[] itemsProductItem;
 
     //Buy item
-    public Transform SpawnItemLocation;
-    public List<VisualElement> BuyCardItemList = new List<VisualElement>();
+    public List<VisualElement> BuyCardItemList = new List<VisualElement>(); // 12
     public List<GameObject> BuyProductItemList = new List<GameObject>();
 
-    [Header("Buying")] public TMP_Text BuyCartAmountText;
-    [SyncVar] public int BuyCartAmount;
+    [SyncVar] public bool isFood, isDrink, isSnack; 
 
     void Start()
     {
         instance = this;
-        if (isServer)
-        {
-            ServerBuyProductItemList();
-        }
     }
 
     void Update()
@@ -59,7 +53,6 @@ public class RegisterAddToCartManager : NetworkBehaviour
     [Server]
     private void ServerBuyingCartItemsText()
     {
-        //BuyCartAmountText.text = BuyCartAmount.ToString();
         for (int i = 0; i < BuyCardItemList.Count; i++)
         {
             if (BuyCardItemList[i] == null)
@@ -68,34 +61,12 @@ public class RegisterAddToCartManager : NetworkBehaviour
             }
         }
     }
-
-    [Server]
-    public void ServerBuyProductItemList()
-    {
-        for (int i = 0; i < itemsProductItem.Length; i++)
-        {
-            //itemsProductItem[i].queue += 1;
-        }
-    }
-
-    [Server]
-    public void BuyingCartItems(int Value)
-    {
-        BuyCartAmount += Value;
-    }
-
-    [Server]
-    public void DeleteCartItems(int Value)
-    {
-        BuyCartAmount -= Value;
-    }
     
     // bazı parametrelerin değişimi
-    [Server]
+    //[Server]
     public void buycardAmountChange(Label totalAmountText) // müşteri ürün onaylaması yapılınca müşteri içerisinde çağırlır
     {
-        _customerManager.CashRegisterQueue.Remove(CustomerManager.instance.CashRegisterQueue[0]);
-        //GameManager.instance.MoneyAddAndRemove(true, BuyCartAmount);
+        GameManager.instance.MoneyAddAndRemove(true, _registerItemProduct._totalAmount, false, new ScrollView());
         _registerItemProduct._totalAmount = 0;
         totalAmountText.text = _registerItemProduct._totalAmount.ToString();
     }
@@ -103,11 +74,12 @@ public class RegisterAddToCartManager : NetworkBehaviour
     // buttonlar
     public void ServerBuyCustomerItemList(ScrollView cartView,Label totalAmountText)
     {
-        if (_customerManager.CashRegisterQueue.Count > 0)
+        if (_customerManager.OrderStayQueue.Count > 0)
         {
-            if (_customerManager.CashRegisterQueue[0]!=null)
+            if (_customerManager.OrderStayQueue[0]!=null)
             {
-                _customerManager.CashRegisterQueue[0].GetComponent<Customer>().CashRegisterProduct(gameObject,cartView,totalAmountText); 
+                _customerManager.OrderStayQueue[0].GetComponent<Customer>().ServerOrderValueChange(_registerItemProduct._totalAmount); 
+                _customerManager.OrderStayQueue[0].GetComponent<Customer>().CashRegisterProduct(gameObject,cartView,totalAmountText); 
             }
             else
             {

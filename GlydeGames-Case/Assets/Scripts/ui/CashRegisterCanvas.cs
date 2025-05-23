@@ -4,17 +4,17 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class CashRegisterCanvas : NetworkBehaviour
 {
     public RegisterItemProduct RegisterItem;
     public UIDocument _document;
 
-    
     public int DrinksCardAmount;
     public int SnacksCardAmount;
     public int MealsCardAmount;
-    
+
     // Güncel isimler text
     private Label[] _cardDrinksNameTexts;
     private Label[] _cardSnacksNameTexts;
@@ -24,54 +24,55 @@ public class CashRegisterCanvas : NetworkBehaviour
     private VisualElement[] _cardDrinksAvatars;
     private VisualElement[] _cardSnacksAvatars;
     private VisualElement[] _cardMealsAvatars;
-    
+
     // Güncel tutar text
     private Label[] _cardDrinksSellAmount;
     private Label[] _cardSnackSellAmount;
     private Label[] _cardMealsSellAmount;
-    
+
     // Sepete ekleme butonu
     private Button[] _addDrinksCardButtons;
     private Button[] _addSnacksCardButtons;
     private Button[] _addMealsCardButtons;
-    
-    [Header("Category Button")] 
-    private Button _drinksButton;
+
+    [Header("Category Button")] private Button _drinksButton;
     private Button _snackButton;
     private Button _mealsButton;
-    
-    [Header("Category Button")] 
-    private VisualElement _drinksPanel;
+
+    [Header("Category Button")] private VisualElement _drinksPanel;
     private VisualElement _snackPanel;
     private VisualElement _mealsPanel;
-    
-    
+
     // Sipariş verilen buton
     private Button _buyButton;
 
     // Sipariş toplam tutarı text
     private Label _totalAmountText;
-    
+
     // ürün silme
     private List<Button> _cartDeleteCardButton = new List<Button>();
 
     private Button deleteButton;
-    
+
     // Scroll view
     private ScrollView CartList;
     private VisualElement VisuelCart;
     public VisualTreeAsset Template;
+
     public override void OnStartServer()
     {
+        if (SceneManager.GetActiveScene().buildIndex == 0) return;
         base.OnStartServer();
         isReadyProductStart();
     }
+
     public override void OnStartClient()
     {
+        if (SceneManager.GetActiveScene().buildIndex == 0) return;
         base.OnStartClient();
         isReadyProductStart();
     }
-    
+
     public void isReadyProductStart()
     {
         ProductAddeValueCard(); // itemlerin yazdırılması
@@ -80,6 +81,10 @@ public class CashRegisterCanvas : NetworkBehaviour
     private void ProductAddeValueCard()
     {
         var root = _document.rootVisualElement;
+
+        DrinksCardAmount = RegisterItem.CategoryDataList._drinkData.Length;
+        SnacksCardAmount = RegisterItem.CategoryDataList._snackData.Length;
+        MealsCardAmount = RegisterItem.CategoryDataList._foodData.Length;
         // card ayarları ekle
         _cardDrinksNameTexts = new Label[DrinksCardAmount];
         _cardSnacksNameTexts = new Label[SnacksCardAmount];
@@ -98,60 +103,57 @@ public class CashRegisterCanvas : NetworkBehaviour
             _cardDrinksNameTexts[i] = root.Q<Label>($"CardNameTextDrink{i + 1}");
             _cardDrinksAvatars[i] = root.Q<VisualElement>($"AvatarDrink{i + 1}");
             _cardDrinksSellAmount[i] = root.Q<Label>($"SellAmountDrink{i + 1}");
-        }  
+        }
+
         for (int i = 0; i < SnacksCardAmount; i++)
         {
             _cardSnacksNameTexts[i] = root.Q<Label>($"CardNameTextSnack{i + 1}");
             _cardSnacksAvatars[i] = root.Q<VisualElement>($"AvatarSnack{i + 1}");
             _cardSnackSellAmount[i] = root.Q<Label>($"SellAmountSnack{i + 1}");
-        }  
+        }
+
         for (int i = 0; i < MealsCardAmount; i++)
         {
             _cardMealsNameTexts[i] = root.Q<Label>($"CardNameTextMeal{i + 1}");
             _cardMealsAvatars[i] = root.Q<VisualElement>($"AvatarMeal{i + 1}");
             _cardMealsSellAmount[i] = root.Q<Label>($"SellAmountMeal{i + 1}");
         }
+
         // girdileri işle
         for (int i = 0; i < DrinksCardAmount; i++)
         {
-            if (_cardDrinksNameTexts[i] != null)
-            {
-                _cardDrinksNameTexts[i].text = RegisterItem.CategoryDataList[0]._ScribtableLearnableItems[i]._name;
-                _cardDrinksAvatars[i].style.backgroundImage = RegisterItem.CategoryDataList[0]._ScribtableLearnableItems[i]._ımage;
-                _cardDrinksSellAmount[i].text = RegisterItem.CategoryDataList[0]._ScribtableLearnableItems[i]._sellAmount.ToString();
-            }
+            _cardDrinksNameTexts[i].text = RegisterItem.CategoryDataList._drinkData[i]._name;
+            _cardDrinksAvatars[i].style.backgroundImage = RegisterItem.CategoryDataList._drinkData[i]._image;
+            _cardDrinksSellAmount[i].text = RegisterItem.CategoryDataList._drinkData[i]._saleValue.ToString();
         }
+
         for (int i = 0; i < SnacksCardAmount; i++)
         {
-            if (_cardSnacksNameTexts != null)
-            {
-                _cardSnacksNameTexts[i].text = RegisterItem.CategoryDataList[1]._ScribtableLearnableItems[i]._name;
-                _cardSnacksAvatars[i].style.backgroundImage = RegisterItem.CategoryDataList[1]._ScribtableLearnableItems[i]._ımage;
-                _cardSnackSellAmount[i].text = RegisterItem.CategoryDataList[1]._ScribtableLearnableItems[i]._sellAmount.ToString();
-            }
+            _cardSnacksNameTexts[i].text = RegisterItem.CategoryDataList._snackData[i]._name;
+            _cardSnacksAvatars[i].style.backgroundImage = RegisterItem.CategoryDataList._snackData[i]._image;
+            _cardSnackSellAmount[i].text = RegisterItem.CategoryDataList._snackData[i]._saleValue.ToString();
         }
+
         for (int i = 0; i < MealsCardAmount; i++)
         {
-            if (_cardMealsNameTexts != null)
-            {
-                _cardMealsNameTexts[i].text = RegisterItem.CategoryDataList[2]._ScribtableLearnableItems[i]._name;
-                _cardMealsAvatars[i].style.backgroundImage = RegisterItem.CategoryDataList[2]._ScribtableLearnableItems[i]._ımage;
-                _cardMealsSellAmount[i].text = RegisterItem.CategoryDataList[2]._ScribtableLearnableItems[i]._sellAmount.ToString();
-            }
+            _cardMealsNameTexts[i].text = RegisterItem.CategoryDataList._foodData[i]._name;
+            _cardMealsAvatars[i].style.backgroundImage = RegisterItem.CategoryDataList._foodData[i]._image;
+            _cardMealsSellAmount[i].text = RegisterItem.CategoryDataList._foodData[i]._saleValue.ToString();
         }
-        
+
         // paneller
         _drinksPanel = root.Q<VisualElement>("DrinksPanel");
         _snackPanel = root.Q<VisualElement>("SnackPanel");
         _mealsPanel = root.Q<VisualElement>("MealPanel");
-        
-        _drinksPanel.style.display= DisplayStyle.None;
-        _snackPanel.style.display= DisplayStyle.None;
-        _mealsPanel.style.display= DisplayStyle.None;
+
+        _drinksPanel.style.display = DisplayStyle.None;
+        _snackPanel.style.display = DisplayStyle.None;
+        _mealsPanel.style.display = DisplayStyle.None;
     }
-    
+
     void OnEnable()
     {
+        if (SceneManager.GetActiveScene().buildIndex == 0) return;
         _document.panelSettings.SetScreenToPanelSpaceFunction((Vector2 screenPosition) =>
         {
             var invalidPosition = new Vector2(float.NaN, float.NaN);
@@ -180,8 +182,10 @@ public class CashRegisterCanvas : NetworkBehaviour
             return pixelUV;
         });
     }
+
     private void Awake()
     {
+        if (SceneManager.GetActiveScene().buildIndex == 0) return;
         GameObject cashRegister = GameObject.Find("CashRegister");
         if (cashRegister == null) return;
         _document = cashRegister.GetComponent<UIDocument>();
@@ -191,8 +195,12 @@ public class CashRegisterCanvas : NetworkBehaviour
 
         ClickEvent(); // basılan butonu çalıştırma
     }
+
     private void AddedCardButton()
     {
+        DrinksCardAmount = RegisterItem.CategoryDataList._drinkData.Length;
+        SnacksCardAmount = RegisterItem.CategoryDataList._snackData.Length;
+        MealsCardAmount = RegisterItem.CategoryDataList._foodData.Length;
         // butonları oluştur
         _addDrinksCardButtons = new Button[DrinksCardAmount];
         _addSnacksCardButtons = new Button[SnacksCardAmount];
@@ -204,55 +212,64 @@ public class CashRegisterCanvas : NetworkBehaviour
         {
             _addDrinksCardButtons[i] = root.Q<Button>($"AddtoCardButtonDrink{i + 1}");
         }
+
         for (int i = 0; i < SnacksCardAmount; i++)
         {
-            _addSnacksCardButtons[i] = root.Q<Button>($"DAddtoCardButtonSnack{i + 1}");
+            _addSnacksCardButtons[i] = root.Q<Button>($"AddtoCardButtonSnack{i + 1}");
         }
+
         for (int i = 0; i < MealsCardAmount; i++)
         {
             _addMealsCardButtons[i] = root.Q<Button>($"AddtoCardButtonMeal{i + 1}");
         }
+
+        _drinksButton = root.Q<Button>("DrinksButton");
+        _snackButton = root.Q<Button>("SnackButton");
+        _mealsButton = root.Q<Button>("MealsButton");
         
-        _drinksButton =  root.Q<Button>("DrinksButton");
-        _snackButton =  root.Q<Button>("SnackButton");
-        _mealsButton =  root.Q<Button>("MealsButton");
-        
+        deleteButton = root.Q<Button>("DeleteButton");
+
         // paneller
         _drinksPanel = root.Q<VisualElement>("DrinksPanel");
         _snackPanel = root.Q<VisualElement>("SnackPanel");
         _mealsPanel = root.Q<VisualElement>("MealPanel");
-        
-        _drinksPanel.style.display= DisplayStyle.None;
-        _snackPanel.style.display= DisplayStyle.None;
-        _mealsPanel.style.display= DisplayStyle.None;
+
+        _drinksPanel.style.display = DisplayStyle.None;
+        _snackPanel.style.display = DisplayStyle.None;
+        _mealsPanel.style.display = DisplayStyle.None;
 
         _buyButton = root.Q<Button>("BuyButton");
-
     }
+
     private void ClickEvent()
     {
+        DrinksCardAmount = RegisterItem.CategoryDataList._drinkData.Length;
+        SnacksCardAmount = RegisterItem.CategoryDataList._snackData.Length;
+        MealsCardAmount = RegisterItem.CategoryDataList._foodData.Length;
         for (int i = 0; i < DrinksCardAmount; i++)
         {
             int index = i;
             if (_addDrinksCardButtons != null)
             {
-                _addDrinksCardButtons[i].clicked += () => OnClickButton(index,0);
+                _addDrinksCardButtons[i].clicked += () => OnClickButton(index, 0);
             }
         }
+
         for (int i = 0; i < SnacksCardAmount; i++)
         {
             int index = i;
-            if (_addSnacksCardButtons!= null)
+            if (_addSnacksCardButtons != null)
             {
-                _addSnacksCardButtons[i].clicked += () => OnClickButton(index,1);
+                _addSnacksCardButtons[i].clicked += () => OnClickButton(index, 1);
             }
         }
+
         for (int i = 0; i < MealsCardAmount; i++)
         {
             int index = i;
             if (_addMealsCardButtons != null)
             {
-               _addMealsCardButtons[i].clicked += () => OnClickButton(index,2); 
+                _addMealsCardButtons[i].clicked += () => OnClickButton(index, 2);
             }
         }
 
@@ -261,90 +278,105 @@ public class CashRegisterCanvas : NetworkBehaviour
         _mealsButton.clicked += () => OnMeatClickButton(); // yiyecek kategorisi aç
 
         _buyButton.clicked += () => BuyClickButton();
+        
+        deleteButton.clicked += () => OnDeleteButton();
     }
-    
     //sepete ekleme eylemi
-    private void OnClickButton(int index,int categoryIndex)
+    private void OnDeleteButton()
     {
         if (!isLocalPlayer) return;
-        CommandAddOrderButton(index,categoryIndex);
+        CommandOnDeleteButton();
     }
 
     [Command]
-    private void CommandAddOrderButton(int index,int categoryIndex)
+    private void CommandOnDeleteButton()
     {
-        RpcAddOrderButton(index,categoryIndex);
+        RpcOnDeleteButton();
     }
 
     [ClientRpc]
-    private void RpcAddOrderButton(int index,int categoryIndex)
+    private void RpcOnDeleteButton()
+    {
+        var root = _document.rootVisualElement;
+        CartList = root.Q<ScrollView>("CartListView");
+        _totalAmountText = root.Q<Label>("TotalAmountSell");
+
+        RegisterItem._totalAmount = 0;
+        _totalAmountText.text = RegisterItem._totalAmount.ToString();
+        
+        CartList.Clear();
+        RegisterItem.registerAddToCartManager.ItemCardItemList.Clear();
+        RegisterItem.registerAddToCartManager.BuyCardItemList.Clear();
+
+     
+            RegisterItem._BurgerScreen.ListClear(); 
+            RegisterItem._SnackScreen.ListClear();
+        
+
+        RegisterItem._registerAddToCartManager.isDrink = false;
+        RegisterItem._registerAddToCartManager.isSnack = false;
+        RegisterItem._registerAddToCartManager.isFood = false;
+    }
+
+    //sepete ekleme eylemi
+    private void OnClickButton(int index, int categoryIndex)
+    {
+        if (!isLocalPlayer) return;
+        CommandAddOrderButton(index, categoryIndex);
+    }
+
+    [Command]
+    private void CommandAddOrderButton(int index, int categoryIndex)
+    {
+        RpcAddOrderButton(index, categoryIndex);
+    }
+
+    [ClientRpc]
+    private void RpcAddOrderButton(int index, int categoryIndex)
     {
         var root = _document.rootVisualElement;
         CartList = root.Q<ScrollView>("CartListView");
         _totalAmountText = root.Q<Label>("TotalAmountSell");
         
-        RegisterItem.AddCart(index, categoryIndex,VisuelCart, Template, CartList,
-            1, _totalAmountText, _cartDeleteCardButton);
-        
-        // item silme butonu kontrol eder
-        for (int i = 0; i < CartList.Children().Count(); i++)
+        switch (categoryIndex)
         {
-            Button deleteButton = _cartDeleteCardButton[i];
-            
-            deleteButton.clicked += () => StringOnClickButton(RegisterItem.registerAddToCartManager.BuyCardItemList[0].name);
+            case 0:
+                if(RegisterItem._registerAddToCartManager.isDrink)return;
+                RegisterItem.AddCart(index, VisuelCart, Template, CartList,
+                    1, _totalAmountText, _cartDeleteCardButton, RegisterItem.CategoryDataList._drinkData[index]._name,
+                    RegisterItem.CategoryDataList._drinkData[index]._image,
+                    RegisterItem.CategoryDataList._drinkData[index]._saleValue,1);
+                break;
+            case 1:
+                if(RegisterItem._registerAddToCartManager.isSnack)return;
+                RegisterItem.AddCart(index, VisuelCart, Template, CartList,
+                    1, _totalAmountText, _cartDeleteCardButton, RegisterItem.CategoryDataList._snackData[index]._name,
+                    RegisterItem.CategoryDataList._snackData[index]._image,
+                    RegisterItem.CategoryDataList._snackData[index]._saleValue,2);
+                break;
+            case 2:
+                if(RegisterItem._registerAddToCartManager.isFood)return;
+                RegisterItem.AddCart(index, VisuelCart, Template, CartList,
+                    1, _totalAmountText, _cartDeleteCardButton, RegisterItem.CategoryDataList._foodData[index]._name,
+                    RegisterItem.CategoryDataList._foodData[index]._image,
+                    RegisterItem.CategoryDataList._foodData[index]._saleValue,0);
+                break;
         }
     }
-    
-    // kart silme
-    public void StringOnClickButton(string elementToRemove)
-    {
-        if (!isLocalPlayer) return;
-        CommandstringButton(elementToRemove);
-    }
 
-    [Command]
-    private void CommandstringButton(string elementToRemove)
-    {
-        // Referansı clientlara RPC ile iletiyoruz
-        RpcStringButton(elementToRemove);
-    }
-
-    [ClientRpc]
-    private void RpcStringButton(string elementToRemove)
-    {
-        var root = _document.rootVisualElement;
-        CartList = root.Q<ScrollView>("CartListView");
-        
-        if (elementToRemove != null)
-        {
-            for (int i = 0; i < RegisterItem.registerAddToCartManager.ItemCardItemList.Count; i++)
-            {
-                if (RegisterItem.registerAddToCartManager.BuyCardItemList[i].name == elementToRemove)
-                {
-                    //RegisterItem.registerAddToCartManager.BuyProductItemList.RemoveAll(productItemList =>productItemList.GetComponent<ObjInteract>().itemName == elementToRemove);
-                    foreach (var item in RegisterItem.registerAddToCartManager.ItemCardItemList)
-                    {
-                        if (item.name == elementToRemove)
-                        {
-                            RegisterItem.registerAddToCartManager.DeleteCartItems(item.TotalCardAmount);
-                            _totalAmountText.text = RegisterItem._totalAmount.ToString();
-                            RegisterItem.registerAddToCartManager.ItemCardItemList.RemoveAt(i);
-                            break;
-                        }
-                    }
-                    RegisterItem.registerAddToCartManager.BuyCardItemList.Remove(RegisterItem.registerAddToCartManager.BuyCardItemList[i]);
-                    CartList.RemoveAt(i);
-                }
-            }
-        }
-    }   
-    
     // panel ayaları  /////
     // Drinks Button Panel ayarı
     private void OnDrinkClickButton()
     {
         if (!isLocalPlayer) return;
-        CommandCategoryDrinkButton();
+        if (RegisterItem._registerAddToCartManager._customerManager.OrderStayQueue.Count > 0)
+        {
+            CommandCategoryDrinkButton();
+        }
+        else
+        {
+            RpcCommandCategoryDrinkButtonButton2();
+        }
     }
 
     [Command]
@@ -357,22 +389,43 @@ public class CashRegisterCanvas : NetworkBehaviour
     private void RpcCommandCategoryDrinkButtonButton()
     {
         var root = _document.rootVisualElement;
-        
+
         _drinksPanel = root.Q<VisualElement>("DrinksPanel");
         _snackPanel = root.Q<VisualElement>("SnackPanel");
         _mealsPanel = root.Q<VisualElement>("MealPanel");
-        
-        _drinksPanel.style.display= DisplayStyle.Flex;
-        _snackPanel.style.display= DisplayStyle.None;
-        _mealsPanel.style.display= DisplayStyle.None;
-    }   
-    
+
+        _drinksPanel.style.display = DisplayStyle.Flex;
+        _snackPanel.style.display = DisplayStyle.None;
+        _mealsPanel.style.display = DisplayStyle.None;
+    }    [ClientRpc]
+    private void RpcCommandCategoryDrinkButtonButton2()
+    {
+        var root = _document.rootVisualElement;
+
+        _drinksPanel = root.Q<VisualElement>("DrinksPanel");
+        _snackPanel = root.Q<VisualElement>("SnackPanel");
+        _mealsPanel = root.Q<VisualElement>("MealPanel");
+
+        _drinksPanel.style.display = DisplayStyle.None;
+        _snackPanel.style.display = DisplayStyle.None;
+        _mealsPanel.style.display = DisplayStyle.None;
+    }
+
     // snack Button Panel ayarı
     private void OnSnackClickButton()
     {
         if (!isLocalPlayer) return;
-        CommandCategorySnackButton();
+        if (RegisterItem._registerAddToCartManager._customerManager.OrderStayQueue.Count > 0)
+        {
+            CommandCategorySnackButton();
+        }
+        else
+        {
+            RpcCommandCategorySnackButtonButton2();
+        }
+        
     }
+
     [Command]
     private void CommandCategorySnackButton()
     {
@@ -383,21 +436,41 @@ public class CashRegisterCanvas : NetworkBehaviour
     private void RpcCommandCategorySnackButtonButton()
     {
         var root = _document.rootVisualElement;
-        
+
         _drinksPanel = root.Q<VisualElement>("DrinksPanel");
         _snackPanel = root.Q<VisualElement>("SnackPanel");
         _mealsPanel = root.Q<VisualElement>("MealPanel");
-        
-        _drinksPanel.style.display= DisplayStyle.None;
-        _snackPanel.style.display= DisplayStyle.Flex;
-        _mealsPanel.style.display= DisplayStyle.None;
+
+        _drinksPanel.style.display = DisplayStyle.None;
+        _snackPanel.style.display = DisplayStyle.Flex;
+        _mealsPanel.style.display = DisplayStyle.None;
+    } 
+    [ClientRpc]
+    private void RpcCommandCategorySnackButtonButton2()
+    {
+        var root = _document.rootVisualElement;
+
+        _drinksPanel = root.Q<VisualElement>("DrinksPanel");
+        _snackPanel = root.Q<VisualElement>("SnackPanel");
+        _mealsPanel = root.Q<VisualElement>("MealPanel");
+
+        _drinksPanel.style.display = DisplayStyle.None;
+        _snackPanel.style.display = DisplayStyle.None;
+        _mealsPanel.style.display = DisplayStyle.None;
     }
-    
+
     // meat Button Panel ayarı
     private void OnMeatClickButton()
     {
         if (!isLocalPlayer) return;
-        CommandCategoryMeatButton();
+        if (RegisterItem._registerAddToCartManager._customerManager.OrderStayQueue.Count > 0)
+        {
+            CommandCategoryMeatButton();
+        }
+        else
+        {
+            RpcCommandCategoryMeatButtonButton2();
+        }
     }
 
     [Command]
@@ -410,16 +483,29 @@ public class CashRegisterCanvas : NetworkBehaviour
     private void RpcCommandCategoryMeatButtonButton()
     {
         var root = _document.rootVisualElement;
-        
+
         _drinksPanel = root.Q<VisualElement>("DrinksPanel");
         _snackPanel = root.Q<VisualElement>("SnackPanel");
         _mealsPanel = root.Q<VisualElement>("MealPanel");
-        
-        _drinksPanel.style.display= DisplayStyle.None;
-        _snackPanel.style.display= DisplayStyle.None;
-        _mealsPanel.style.display= DisplayStyle.Flex;
-    }    
-    
+
+        _drinksPanel.style.display = DisplayStyle.None;
+        _snackPanel.style.display = DisplayStyle.None;
+        _mealsPanel.style.display = DisplayStyle.Flex;
+    }
+    [ClientRpc]
+    private void RpcCommandCategoryMeatButtonButton2()
+    {
+        var root = _document.rootVisualElement;
+
+        _drinksPanel = root.Q<VisualElement>("DrinksPanel");
+        _snackPanel = root.Q<VisualElement>("SnackPanel");
+        _mealsPanel = root.Q<VisualElement>("MealPanel");
+
+        _drinksPanel.style.display = DisplayStyle.None;
+        _snackPanel.style.display = DisplayStyle.None;
+        _mealsPanel.style.display = DisplayStyle.None;
+    }
+
     // Müşterinin ürün fiyatlarını keser
     private void BuyClickButton()
     {
@@ -440,6 +526,6 @@ public class CashRegisterCanvas : NetworkBehaviour
         CartList = root.Q<ScrollView>("CartListView");
         _totalAmountText = root.Q<Label>("TotalAmountSell");
         //RegisterItem.registerAddToCartManager.ServerBuyCustomerItemList(CartList,_totalAmountText);
-        RegisterItem.BuyButton(CartList,_totalAmountText);
+        RegisterItem.BuyButton(CartList, _totalAmountText);
     }
 }

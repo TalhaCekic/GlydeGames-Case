@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/ui/Doc/OnlineOrderCanvas/OnlineOrderUss.uss?fileID=7433441132597879392&amp;guid=391d5e63196b52041b3cea0c43c47666&amp;type=3#OnlineOrderUss" />
+    <ui:VisualElement name="Card" class="onlineOrderElement">
+        <ui:Label parse-escape-sequences="true" display-tooltip-when-elided="true" name="OrderName_Label" style="position: absolute; height: 64px; width: 85px; -unity-font-definition: url(&quot;project://database/Assets/Fonts/Inter-Bold%20SDF.asset?fileID=11400000&amp;guid=da8e6a2465c9c9a4599fc148f4652194&amp;type=2#Inter-Bold SDF&quot;); font-size: 20px; -unity-text-align: middle-left;" />
+        <ui:Label parse-escape-sequences="true" display-tooltip-when-elided="true" name="OrderNo_Label" style="position: absolute; height: 64px; width: 85px; -unity-font-definition: url(&quot;project://database/Assets/Fonts/Inter-Bold%20SDF.asset?fileID=11400000&amp;guid=da8e6a2465c9c9a4599fc148f4652194&amp;type=2#Inter-Bold SDF&quot;); font-size: 20px; -unity-text-align: middle-right; left: 104px;" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -7,52 +7,51 @@ using UnityEngine.AI;
 
 public class TruckSystem : NetworkBehaviour
 {
-    [Header("Spline System")]
-    public SplineFollower splineFollover;
+    [Header("Spline System")] public SplineFollower splineFollover;
     public SplineComputer splineComputer;
 
-    [Header("Duraksama Ayarı")]
-    [SyncVar] public bool isStop;
+    [Header("Duraksama Ayarı")] [SyncVar] public bool isStop;
     [SyncVar] public float timeDelay;
 
-    [Header("Box Spawn System")] 
-    public BoxSpawnerManager boxSpawnerManager;
+    [Header("Box Spawn System")] public BoxSpawnerManager boxSpawnerManager;
 
     public Transform InParentBoxSpawnTransform;
-    void Start() {
+
+    public Transform LeftDoor, RightDoor;
+
+    void Start()
+    {
         if (isServer)
         {
             ServerTest();
         }
     }
+
     [Server]
     private void ServerTest()
     {
         RpcTest();
-        AddToCartManager.instance.ServerBuyButtonSettings(true);
+        ProductItem.instance.ServerBuyButtonSettings(true);
     }
-    
+
     [ClientRpc]
     private void RpcTest()
     {
         GameObject splineObject = GameObject.Find("WayKargoTruckTest");
         splineComputer = splineObject.GetComponent<SplineComputer>();
-        
+
         GameObject BoxSpawnObj = GameObject.Find("BoxSpawnPos");
         boxSpawnerManager = BoxSpawnObj.GetComponent<BoxSpawnerManager>();
-        
+
         if (splineComputer != null)
         {
             splineFollover.spline = splineComputer; // yolun atamasını yap
             splineFollover.followSpeed = 13;
         }
 
-        if (boxSpawnerManager == null)
-        {
-            // BoxSpawnObj.transform.parent = InParentBoxSpawnTransform; // bu objeye başlangıçta parent yap
-            // BoxSpawnObj.transform.position = Vector3.zero; // bu objeye başlangıçta parent yap
-            // print("aaaaa");
-        }
+        boxSpawnerManager.transform.parent = InParentBoxSpawnTransform;
+        boxSpawnerManager.transform.position = InParentBoxSpawnTransform.position;
+        boxSpawnerManager.transform.rotation = InParentBoxSpawnTransform.rotation;
     }
 
     void Update()
@@ -60,48 +59,47 @@ public class TruckSystem : NetworkBehaviour
         if (isServer)
         {
             ServerUpdate();
-            Timer();
         }
     }
+
     [Server]
     private void ServerUpdate()
     {
         RpcUpdate();
     }
-    
+
+
     [ClientRpc]
     private void RpcUpdate()
     {
-        if (splineFollover.result.percent > 0.36f)
+        if (splineFollover.result.percent > 0.5f)
         {
-            if (timeDelay > 20)
+            if (boxSpawnerManager.Items.Count==0)
             {
                 splineFollover.follow = true;
+                boxSpawnerManager.transform.parent = null;
+                LeftDoor.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                RightDoor.transform.localRotation = Quaternion.Euler(0, 0, 0);
             }
             else
             {
                 splineFollover.follow = false;
                 isStop = true;
-                
+    
+                boxSpawnerManager.transform.parent = InParentBoxSpawnTransform;
                 boxSpawnerManager.transform.position = InParentBoxSpawnTransform.position;
+                boxSpawnerManager.transform.rotation = InParentBoxSpawnTransform.rotation;
                 boxSpawnerManager.ServerItemListRemove();
+    
+                LeftDoor.transform.localRotation = Quaternion.Euler(0, 90, 0);
+                RightDoor.transform.localRotation = Quaternion.Euler(0, -90, 0);
             }
         }
-
+    
         if (splineFollover.result.percent >= 0.95f)
         {
-            AddToCartManager.instance.ServerBuyButtonSettings(false);
+            ProductItem.instance.ServerBuyButtonSettings(false);
             Destroy(gameObject);
         }
     }
-
-    [Server]
-    private void Timer()
-    {
-        if (isStop)
-        {
-            timeDelay += Time.deltaTime;
-        }
-    }
-
 }

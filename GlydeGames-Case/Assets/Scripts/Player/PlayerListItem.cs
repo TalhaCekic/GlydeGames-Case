@@ -101,19 +101,4 @@ public class PlayerListItem : NetworkBehaviour
             return;
         }
     }
-
-    public void KickThisPlayer()
-    {
-        KickPlayerByConnectionId(ConnectionID);
-    }
-
-    public void KickPlayerByConnectionId(int connectionId)
-    {
-        NetworkConnectionToClient conn = NetworkServer.connections[connectionId];
-        if (conn != null)
-        {
-            conn.Disconnect();
-            NetworkServer.RemovePlayerForConnection(conn, this.gameObject);
-        }
-    }
 }
