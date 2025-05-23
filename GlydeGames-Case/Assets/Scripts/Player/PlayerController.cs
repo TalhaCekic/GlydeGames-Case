@@ -180,7 +180,6 @@ namespace Player.PlayerControl
             CharacterController.Move(move * targetSpeed);
             _animator.SetFloat(_xVelHash, _currentVelocity.z * AnimBlendSpeed);
             _animator.SetFloat(_yVelHash, _currentVelocity.x * AnimBlendSpeed);
-            print(_currentVelocity);
         }
 
 

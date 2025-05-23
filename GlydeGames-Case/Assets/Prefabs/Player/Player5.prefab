@@ -1191,6 +1191,7 @@ GameObject:
   - component: {fileID: 9124760317859460182}
   - component: {fileID: -3020824275602947310}
   - component: {fileID: 4341876723532433999}
+  - component: {fileID: 7682352789512117890}
   m_Layer: 0
   m_Name: Player5
   m_TagString: Player
@@ -1619,6 +1620,24 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &7682352789512117890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2266451415077493300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10190a9ba64d83749a2ce6a378dee771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 536870912
+  holdPoint: {fileID: 82921511341869587}
+  moveSpeed: 10
+  throwForce: 500
 --- !u!1 &2305594117445442076
 GameObject:
   m_ObjectHideFlags: 0
