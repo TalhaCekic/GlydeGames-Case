@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using Dreamteck.Splines.Primitives;
 using Mirror;
 using Steamworks;
 using TMPro;
@@ -45,6 +44,7 @@ public class LobbyController : NetworkBehaviour
             {
                 return manager;
             }
+
             return manager = CustomNetworkManager.singleton as CustomNetworkManager;
         }
     }
@@ -118,7 +118,7 @@ public class LobbyController : NetworkBehaviour
 
     public void UpdateLobbyName()
     {
-        CurrentLobbyID = SteamLobby.instance.currentLobbyID;
+        CurrentLobbyID = Manager.GetComponent<SteamLobby>().currentLobbyID;
         //LobbyNameText.text = SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name");
     }
 
@@ -213,6 +213,7 @@ public class LobbyController : NetworkBehaviour
                     PlayerLisItemScript.isReady = player.Ready;
 
                     PlayerLisItemScript.SetPlayerValues();
+                    if (!isClient) return;
                     UpdateButton();
                 }
             }
@@ -221,7 +222,6 @@ public class LobbyController : NetworkBehaviour
 
     public void RemovePlayerItem()
     {
-        if(SteamLobby.instance.currentLobbyID==0)return;
         List<PlayerListItem> playerListItemToRemove = new List<PlayerListItem>();
 
         foreach (PlayerListItem playerList in PlayerListItem)
