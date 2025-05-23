@@ -52,28 +52,6 @@ public class LobbyController : NetworkBehaviour
     void Awake()
     {
         Instance = this;
-       // this.gameObject.SetActive(true);
-        ServerStart();
-    }
-
-    private void Start()
-    {
-       // if(!isServer)return;
-        ServerStart();
-    }
-
-    [Server]
-    private void ServerStart()
-    {
-        RpcStart();
-    }
-    [ClientRpc]
-    private void RpcStart()
-    {
-        if(steamLobby !=null)return;
-        //GameObject steam = GameObject.FindGameObjectWithTag("NetworkManager");
-      //  steamLobby = steam.GetComponent<SteamLobby>();
-        steamLobby = SteamLobby.instance;
     }
 
     public void InvitePlayer()
@@ -118,7 +96,6 @@ public class LobbyController : NetworkBehaviour
         if (isServer)
         {
             StateReadyNextScene();
-            ServerStart();
         }
     }
 
