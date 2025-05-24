@@ -1632,12 +1632,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10190a9ba64d83749a2ce6a378dee771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   interactableLayer:
     serializedVersion: 2
     m_Bits: 536870912
-  holdPoint: {fileID: 82921511341869587}
-  moveSpeed: 10
-  throwForce: 500
+  holdPoint: {fileID: 4682424547417030303}
+  moveSpeed: 50
+  throwForce: 1000
 --- !u!1 &2305594117445442076
 GameObject:
   m_ObjectHideFlags: 0
@@ -3435,7 +3438,7 @@ Transform:
   m_GameObject: {fileID: 5819876054053314362}
   serializedVersion: 2
   m_LocalRotation: {x: 0.000000033527616, y: 0.7071068, z: 0.000000033527616, w: 0.7071068}
-  m_LocalPosition: {x: 0.267, y: -0.419, z: 0.576}
+  m_LocalPosition: {x: 0, y: -0.419, z: 0.768}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

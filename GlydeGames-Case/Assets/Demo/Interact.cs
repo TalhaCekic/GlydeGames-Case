@@ -60,6 +60,7 @@ public class Interact : NetworkBehaviour
     [ClientRpc]
     private void RpcMoveObject()
     {
+        if(selectedRigidbody == null) return;
         selectedRigidbody.MovePosition(Vector3.Lerp(
                    selectedRigidbody.position,
                    holdPoint.position,
@@ -107,6 +108,7 @@ public class Interact : NetworkBehaviour
         {
             selectedRigidbody.isKinematic = false;
             selectedRigidbody = null;
+            print("Object released");
         }
     }
 
