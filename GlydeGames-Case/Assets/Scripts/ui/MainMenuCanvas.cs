@@ -18,6 +18,7 @@ public class MainMenuCanvas : MonoBehaviour
     private Button LeaveButton;
     private Button QuitButton;
     public Label lobbyCode;
+    private Label _PlayerCountLabel;
 
     [Header("Url")] 
     public string DiscordUrl;
@@ -39,6 +40,8 @@ public class MainMenuCanvas : MonoBehaviour
         LeaveButton = _document.rootVisualElement.Q("Leave_Button") as Button;
         QuitButton = _document.rootVisualElement.Q("Quit_Button") as Button;
         lobbyCode = _document.rootVisualElement.Q("LobbyCode") as Label;
+        _PlayerCountLabel = _document.rootVisualElement.Q("PlayerCount_Label") as Label;
+
             
         ReadyButton.RegisterCallback<ClickEvent>(ReadyPlayerButton);
         LeaveButton.RegisterCallback<ClickEvent>(LobbyLeaveButton);
@@ -69,5 +72,9 @@ public class MainMenuCanvas : MonoBehaviour
     private void GameQuitButton(ClickEvent evt)
     {
         Application.Quit();
+    }
+    public void UpdatePlayerCount(int playerCount)
+    {
+        _PlayerCountLabel.text = playerCount.ToString();
     }
 }

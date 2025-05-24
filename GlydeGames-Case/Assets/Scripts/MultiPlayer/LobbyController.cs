@@ -67,19 +67,16 @@ public class LobbyController : NetworkBehaviour
         {
             MainMenuCanvas.instance.ReadyButton.text = ReadyString;
             MainMenuCanvas.instance.ReadyButton.style.color = Color.green;
-            //ReadyButtonText.text = UnreadyString;
         }
         else
         {
             MainMenuCanvas.instance.ReadyButton.text = UnreadyString;
             MainMenuCanvas.instance.ReadyButton.style.color = Color.red;
-            // ReadyButtonText.text = ReadyString;
         }
     }
 
     public void CheckIfAllReady()
     {
-        // bool AllReady = false;
         if (PlayerListItem.Count == ReadyPlayerCount)
         {
             AllReady = true;
@@ -107,12 +104,7 @@ public class LobbyController : NetworkBehaviour
             nextDelay += Time.deltaTime;
             if (nextDelay > 3)
             {
-                //RpcStateReadySceneNextScene();
                 SteamLobby.instance.NextScene();
-                if (nextDelay > 6f)
-                {
-                    //SteamLobby.instance.NextScene();
-                }
             }
         }
     }
@@ -120,7 +112,6 @@ public class LobbyController : NetworkBehaviour
     public void UpdateLobbyName()
     {
         CurrentLobbyID = Manager.GetComponent<SteamLobby>().currentLobbyID;
-        //LobbyNameText.text = SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name");
     }
 
     public void UpdatePlayerList()
@@ -171,6 +162,7 @@ public class LobbyController : NetworkBehaviour
             NewPlayerItem.transform.localRotation = new Quaternion(0, 180, 0, 0);
 
             PlayerListItem.Add(NewPlayerItemScript);
+            MainMenuCanvas.instance.UpdatePlayerCount(PlayerListItem.Count);
         }
         PlayerItemCreated = true;
     }
@@ -197,6 +189,7 @@ public class LobbyController : NetworkBehaviour
 
                 PlayerListItem.Add(NewPlayerItemScript);
                 CheckIfAllReady();
+                MainMenuCanvas.instance.UpdatePlayerCount(PlayerListItem.Count);
             }
         }
     }
@@ -214,6 +207,7 @@ public class LobbyController : NetworkBehaviour
 
                     PlayerLisItemScript.SetPlayerValues();
                     UpdateButton();
+                    MainMenuCanvas.instance.UpdatePlayerCount(PlayerListItem.Count);
                 }
             }
         }
@@ -232,7 +226,6 @@ public class LobbyController : NetworkBehaviour
                     playerListItemToRemove.Add(playerList);
                 }
             }
-
             if (playerListItemToRemove.Count > 0)
             {
                 foreach (PlayerListItem PlayerListItemRemove in playerListItemToRemove)
@@ -251,6 +244,7 @@ public class LobbyController : NetworkBehaviour
                     ObjectToRemove = null;
                 }
             }
+            MainMenuCanvas.instance.UpdatePlayerCount(PlayerListItem.Count);
         }
     }
 }

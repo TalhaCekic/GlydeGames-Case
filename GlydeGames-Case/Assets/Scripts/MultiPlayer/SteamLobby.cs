@@ -205,8 +205,6 @@ public class SteamLobby : MonoBehaviour
 
     private void onJoinRequest(GameLobbyJoinRequested_t callback)
     {
-        //leavingToServer();
-        //MainMenuCanvas.instance.joinedLobby();
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     }
 
