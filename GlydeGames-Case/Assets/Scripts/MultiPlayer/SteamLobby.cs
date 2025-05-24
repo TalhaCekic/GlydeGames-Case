@@ -149,6 +149,7 @@ public class SteamLobby : MonoBehaviour
         if (currentLobbyID != 0)
         {
             SteamMatchmaking.LeaveLobby((CSteamID)currentLobbyID);
+            LobbyController.Instance.UpdateLobbyName();
             currentLobbyID = 0;
         }
 
