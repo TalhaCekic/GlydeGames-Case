@@ -1,4 +1,5 @@
 using Mirror;
+using TMPro;
 using UnityEngine;
 
 public class ObjDatas : NetworkBehaviour
@@ -8,6 +9,7 @@ public class ObjDatas : NetworkBehaviour
     float playerPushForce = 80f;
     public float impactThreshold = 10f;
 
+    public TMP_Text valueText;
     private void Start()
     {
         ServerStart();
@@ -23,6 +25,7 @@ public class ObjDatas : NetworkBehaviour
     private void ClientStart()
     {
         currentValue = maxValue;
+        valueText.text = maxValue.ToString();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -37,6 +40,7 @@ public class ObjDatas : NetworkBehaviour
             int damage = Mathf.RoundToInt(impactForce);
             currentValue -= damage;
             currentValue = Mathf.Clamp(currentValue, 0, maxValue);
+            RpcUpdateValueText();
             Debug.Log($"Objeye çarpma oldu! Hasar: {damage}, Kalan Deðer: {currentValue}");
 
             if (collision.collider.CompareTag("Player"))
@@ -55,7 +59,11 @@ public class ObjDatas : NetworkBehaviour
             Debug.Log($"Çarpma hýzý ({impactForce}) eþik deðerin altýnda, iþlem yapýlmadý.");
         }
     }
-
+    [ClientRpc]
+    private void RpcUpdateValueText()
+    {
+        valueText.text = currentValue.ToString();
+    }
     [ClientRpc]
     private void RpcPushPlayer(uint playerNetId, Vector3 force)
     {

@@ -10,8 +10,6 @@ namespace Player.PlayerControl
 {
     public class PlayerController : NetworkBehaviour
     {
-        public CharacterController CharacterController;
-
         [SerializeField] private float AnimBlendSpeed = 8.9f;
         [SerializeField] private Transform CameraRoot;
         [SerializeField] private Transform camera;
@@ -133,7 +131,6 @@ namespace Player.PlayerControl
             Vector3 kafaBakisPos = new Vector3(0, Mathf.Sin((-headAngle) * Mathf.Deg2Rad),
                 Mathf.Cos((-headAngle) * Mathf.Deg2Rad));
             HeadLook.transform.localPosition = kafaBakisPos * 5;
-
 
             camera.localRotation = Quaternion.Euler(headAngle, 0, 0);
 
