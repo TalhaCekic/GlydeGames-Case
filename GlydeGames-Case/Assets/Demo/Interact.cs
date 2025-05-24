@@ -11,7 +11,6 @@ public class Interact : NetworkBehaviour
     public float moveSpeed = 10f;
     public float throwForce = 500f;
 
-    [SyncVar] private uint selectedNetId = 0; // Aðda seçili objenin netId'si
     private Rigidbody selectedRigidbody;
 
     private void Update()

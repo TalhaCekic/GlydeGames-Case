@@ -7,7 +7,6 @@ namespace Player.Manager
 {
 	public class InputManager : NetworkBehaviour
 	{
-		public PlayerInteract playerInteract;
 
 		[SerializeField] private PlayerInput PlayerInput;
 		[SerializeField] private InputActionAsset InputAssets;
@@ -43,7 +42,6 @@ namespace Player.Manager
 		private InputAction _throwAction;
 
 		private void Awake() {
-			playerInteract = GetComponent<PlayerInteract>();
 
 			_currentMap = PlayerInput.currentActionMap;
 			_menuCurrentMap = InputAssets.FindActionMap("Menu");
@@ -83,25 +81,6 @@ namespace Player.Manager
 			_mouse0ClickAction.canceled += onMouse0ClickCanceled; // sol click iptali
 			_pauseAction.canceled += onPause;
 			
-		}
-		private void Update() {
-			// if (_mouse0HoldAction.IsPressed()) {
-			// 	Mouse0Hold= true;
-			// 	if (isLocalPlayer) {
-			// 		playerInteract.BoxInteractShelftoBoxHold();
-			// 	}
-			// } else {
-			// 	Mouse0Hold = false;
-			// }
-
-			// if (_mouse1Action.IsPressed()) {
-			// 	Mouse1 = true;
-			// 	if (isLocalPlayer) {
-			// 		playerInteract.BoxInteractBoxtoShelf();
-			// 	}
-			// } else {
-			// 	Mouse1 = false;
-			// }
 		}
 		private void HideCursor() {
 			Cursor.visible = false;
@@ -179,6 +158,5 @@ namespace Player.Manager
 			_currentMap.Disable();
 			_menuCurrentMap.Disable();
 		}
-
 	}
 }

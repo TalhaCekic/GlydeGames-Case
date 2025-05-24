@@ -23,8 +23,6 @@ public class LobbyDatas : NetworkBehaviour
     public static LobbyDatas instance;
 
     public List<ObjData> objList = new List<ObjData>();
-    
-    public Datas data;
 
     
     void Awake()
@@ -49,24 +47,6 @@ public class LobbyDatas : NetworkBehaviour
         instance = this;
         // DontDestroyOnLoad(gameObject);
         // ChangeUpdateReset();
-    }
-    
-
-    void Update()
-    {
-        // if (SceneManager.GetActiveScene().buildIndex == 1) return;
-        // for (int i = 0; i < data.updateData.Length; i++)
-        // {
-        //      data.updateData[i]._active = false;
-        // }
-    }
-
-    public void ChangeUpdateReset()
-    {
-        for (int i = 0; i < data.updateData.Length; i++)
-        {
-            data.updateData[i]._active = false;
-        }
     }
     
 }

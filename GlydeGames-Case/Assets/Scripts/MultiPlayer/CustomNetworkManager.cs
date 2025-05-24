@@ -61,9 +61,7 @@ public class CustomNetworkManager : NetworkManager
     }
 
     public override void OnServerChangeScene(string a)
-    {
-        if(LastDay==0) LastMoney = 1050;
-        
+    {        
         //GamePlayerDataInstance.transform.rotation = spawnPoints[GamePlayers.Count].transform.rotation;
         spawnPoints.Clear();
         GamePlayers.Clear();
@@ -75,12 +73,6 @@ public class CustomNetworkManager : NetworkManager
 
         spawnPoints.Clear();
         GamePlayers.Clear();
-        SteamLobby.instance.leavingToServer();
-    }
-
-    public void ResetData()
-    {
-        LastMoney = 1050;
-        LastDay = 0;
+        //SteamLobby.instance.leavingToServer();
     }
 }

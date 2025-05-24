@@ -1,7 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="Card" style="width: 300px; height: 80px; margin-top: 5px; margin-bottom: 5px; align-self: center; background-color: rgba(0, 0, 0, 0.78);">
-        <ui:VisualElement name="Avatar" style="flex-grow: 1; position: absolute; height: 50px; width: 46px; top: 17px; left: 11px;" />
-        <ui:Label parse-escape-sequences="true" display-tooltip-when-elided="true" name="Comment_Label" style="position: absolute; height: 56px; width: 216px; top: 9px; left: 69px; -unity-font-definition: url(&quot;project://database/Assets/Fonts/Inter-Bold%20SDF.asset?fileID=11400000&amp;guid=da8e6a2465c9c9a4599fc148f4652194&amp;type=2#Inter-Bold SDF&quot;); color: rgb(255, 255, 255); -unity-text-align: middle-center;" />
-        <ui:Label parse-escape-sequences="true" display-tooltip-when-elided="true" name="Name_Label" style="position: absolute; height: 35px; width: 216px; top: -4px; left: 70px; -unity-font-definition: url(&quot;project://database/Assets/Fonts/Inter-Bold%20SDF.asset?fileID=11400000&amp;guid=da8e6a2465c9c9a4599fc148f4652194&amp;type=2#Inter-Bold SDF&quot;); color: rgb(0, 255, 16); -unity-text-align: middle-center;" />
-    </ui:VisualElement>
-</ui:UXML>

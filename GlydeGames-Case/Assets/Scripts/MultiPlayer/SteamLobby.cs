@@ -130,25 +130,22 @@ public class SteamLobby : MonoBehaviour
     // lobiden ayrılma li
     public void leaving()
     {
-        if (LobbyDatas.instance != null)LobbyDatas.instance.ChangeUpdateReset();
-        CustomNetworkManager.instance.ResetData(); //
-        
-        if (NetworkServer.active)
-        {
-            NetworkManager.singleton.StopHost();
-        }
-        else if (NetworkClient.active)
-        {
+       // if (NetworkServer.active)
+       // {
+       //     NetworkManager.singleton.StopHost();
+       // }
+       // else if (NetworkClient.active)
+      //  {
             NetworkManager.singleton.StopClient();
-        }
+       // }
 
-        SteamMatchmaking.LeaveLobby(new CSteamID(currentLobbyID));
-        SteamMatchmaking.DeleteLobbyData((CSteamID)currentLobbyID, "name");
+       // SteamMatchmaking.LeaveLobby(new CSteamID(currentLobbyID));
+        //SteamMatchmaking.DeleteLobbyData((CSteamID)currentLobbyID, "name");
         currentLobbyID = 0;
-        if (LobbyDatas.instance != null)
-        {
-            Destroy(LobbyDatas.instance.gameObject);
-        }
+       // if (LobbyDatas.instance != null)
+      //  {
+        //    Destroy(LobbyDatas.instance.gameObject);
+       // }
         SceneManager.LoadScene(0);
         StartCoroutine(DelayedAction());
     }
@@ -164,7 +161,6 @@ public class SteamLobby : MonoBehaviour
     // lobiden ayrılma butonu
     public void leavingToServer()
     {
-        if (LobbyDatas.instance != null)LobbyDatas.instance.ChangeUpdateReset();
         
         if (NetworkServer.active)
         {
@@ -178,7 +174,6 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.LeaveLobby(new CSteamID(currentLobbyID));
         SteamMatchmaking.DeleteLobbyData((CSteamID)currentLobbyID, "name");
         currentLobbyID = 0;
-        CustomNetworkManager.instance.ResetData();
     }
 
     public void Restart()
@@ -210,7 +205,7 @@ public class SteamLobby : MonoBehaviour
 
     private void onJoinRequest(GameLobbyJoinRequested_t callback)
     {
-        leavingToServer();
+        //leavingToServer();
         //MainMenuCanvas.instance.joinedLobby();
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     }

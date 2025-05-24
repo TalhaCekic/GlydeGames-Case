@@ -13,7 +13,6 @@ namespace Player.PlayerMenu
         [Header("Pause")] public bool isPause;
         public GameObject pauseMenu;
         //private InputManager _inputManager;
-        private PlayerInteract _playerInteract;
         
         public UIDocument Doc;
         private VisualElement _bgElemet;
@@ -45,7 +44,6 @@ namespace Player.PlayerMenu
             _settingsButtom = Doc.rootVisualElement.Q<Button>("Settings_Button");
             _mainMenuButton = Doc.rootVisualElement.Q<Button>("Main_Button");
             
-            _playerInteract = GetComponent<PlayerInteract>();
             isPause = false;
             pauseMenu.SetActive(false);
 
