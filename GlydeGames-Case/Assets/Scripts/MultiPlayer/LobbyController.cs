@@ -11,9 +11,8 @@ using UnityEngine.UI;
 public class LobbyController : NetworkBehaviour
 {
     public static LobbyController Instance;
-    public SteamLobby steamLobby;
 
-    [Header("Player Data")] public GameObject PlayerListViewContant;
+    [Header("Player Data")]
     public GameObject PlayerListItemPrefab;
     public GameObject LocalPlayerObject;
 
@@ -26,8 +25,6 @@ public class LobbyController : NetworkBehaviour
     private CustomNetworkManager manager;
 
     [Header("Ready System")]
-    // public Button StartGameButton;
-    public TMP_Text ReadyButtonText;
 
     public string ReadyString;
     public string UnreadyString;
@@ -54,7 +51,7 @@ public class LobbyController : NetworkBehaviour
     }
     public void InvitePlayer()
     {
-        steamLobby.InviteButton();
+        SteamLobby.instance.InviteButton();
     }
     public void ReadyPlayer()
     {
@@ -231,14 +228,10 @@ public class LobbyController : NetworkBehaviour
                 foreach (PlayerListItem PlayerListItemRemove in playerListItemToRemove)
                 {
                     GameObject ObjectToRemove = PlayerListItemRemove.gameObject;
-                    //PlayerListItemRemove.isReady = false;
                     if (PlayerListItemRemove.isReady)
                     {
                         ReadyPlayerCount--;
                     }
-                    //print(PlayerListItemRemove.isReady);
-                    //CheckIfAllReady();
-                    //ReadyPlayer();
                     PlayerListItem.Remove(PlayerListItemRemove);
                     Destroy(ObjectToRemove);
                     ObjectToRemove = null;

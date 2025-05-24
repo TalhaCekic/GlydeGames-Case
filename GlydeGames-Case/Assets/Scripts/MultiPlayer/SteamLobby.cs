@@ -15,8 +15,6 @@ public class SteamLobby : MonoBehaviour
     protected Callback<LobbyCreated_t> LobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
     protected Callback<LobbyEnter_t> LobbyEntered;
-    protected Callback<SteamServersDisconnected_t> LobbyDisconnected;
-    protected Callback<GSClientKick_t> lobbyKicked;
 
     public ulong currentLobbyID;
     public const string HostAdressKey = "HostAddress";
@@ -47,8 +45,6 @@ public class SteamLobby : MonoBehaviour
         LobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         JoinRequest = Callback<GameLobbyJoinRequested_t>.Create(onJoinRequest);
         LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
-        LobbyDisconnected = Callback<SteamServersDisconnected_t>.Create(OnLobbyDisconnected);
-        lobbyKicked = Callback<GSClientKick_t>.Create(OnLobbyKicked);
         Host();
     }
 
@@ -65,6 +61,7 @@ public class SteamLobby : MonoBehaviour
             SteamManager steamManager = gameObject.GetComponent<SteamManager>();
             steamManager.enabled = true;
             FizzySteamworks.active.ClientConnected();
+            print("Steam is not initialized, enabling SteamManager.");
         }
     }
 
@@ -142,18 +139,37 @@ public class SteamLobby : MonoBehaviour
         manager.StartClient();
     }
 
-    private void OnLobbyDisconnected(SteamServersDisconnected_t callback)
-    {
-        Debug.Log("Steam sunucularıyla bağlantı kesildi. Sonuç: " + callback.m_eResult);
-    }
-
-    private void OnLobbyKicked(GSClientKick_t callback)
-    {
-        Debug.Log("Kicked from lobby.");
-    }
-
     public void ApplicationQuit()
     {
         ApplicationQuit();
+    }
+    public void LeaveLobbyAndReturnToMenu()
+    {
+        // Steam lobby'den çık
+        if (currentLobbyID != 0)
+        {
+            SteamMatchmaking.LeaveLobby((CSteamID)currentLobbyID);
+            currentLobbyID = 0;
+        }
+
+        // Mirror bağlantılarını kapat
+        if (NetworkManager.singleton != null)
+        {
+            if (NetworkServer.active && NetworkClient.isConnected)
+                NetworkManager.singleton.StopHost();
+            else if (NetworkClient.isConnected)
+                NetworkManager.singleton.StopClient();
+            else if (NetworkServer.active)
+                NetworkManager.singleton.StopServer();
+        }
+
+        // Callback'leri temizle
+        LobbyCreated = null;
+        JoinRequest = null;
+        LobbyEntered = null;
+
+        Destroy(this.gameObject);
+        // Ana menü sahnesine dön
+        SceneManager.LoadScene(MainMenuSceneName);
     }
 }

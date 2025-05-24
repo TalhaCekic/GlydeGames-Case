@@ -56,7 +56,6 @@ public class MainMenuCanvas : MonoBehaviour
     void Start()
     {
         instance = this;
-        lobbyCode.text = SteamLobby.instance.currentLobbyID.ToString();
     }
 
     private void ReadyPlayerButton(ClickEvent evt)
@@ -67,7 +66,7 @@ public class MainMenuCanvas : MonoBehaviour
     private void LobbyLeaveButton(ClickEvent evt)
     {
         SteamLobby.instance.leaving();
-        lobbyCode.text = SteamLobby.instance.currentLobbyID.ToString();
+        SteamLobby.instance.LeaveLobbyAndReturnToMenu();
     }
     private void GameQuitButton(ClickEvent evt)
     {
