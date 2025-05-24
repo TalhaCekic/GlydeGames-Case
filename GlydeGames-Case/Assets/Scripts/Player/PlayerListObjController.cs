@@ -1,10 +1,6 @@
-using System;
 using Mirror;
 using Steamworks;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerListObjController : NetworkBehaviour
 {
@@ -19,9 +15,14 @@ public class PlayerListObjController : NetworkBehaviour
     public string PlayerName;
 
     [SyncVar(hook = nameof(PlayerReadyUpdate))]
-     public bool Ready;
+    public bool Ready;
 
     [SyncVar] public bool inAnim;
+    [SyncVar] public bool outAnim;
+    [SyncVar] public bool upAnim;
+    [SyncVar] public bool isTofic;
+    [SyncVar] public bool isTalos;
+    [SyncVar] public bool isBongo;
 
     private CustomNetworkManager manager;
 
@@ -37,6 +38,13 @@ public class PlayerListObjController : NetworkBehaviour
             return manager = CustomNetworkManager.singleton as CustomNetworkManager;
         }
     }
+    void Update()
+    {
+        if (isServer)
+        {
+            //LobbyAnimation();
+        }
+    }
 
     private void PlayerReadyUpdate(bool oldValue, bool newValue)
     {
@@ -50,18 +58,18 @@ public class PlayerListObjController : NetworkBehaviour
             this.Ready = newValue;
             LobbyController.Instance.UpdatePlayerList();
         }
-    } 
+    }
     [Command]
     private void CmdSetPlayerReady()
     {
         this.PlayerReadyUpdate(this.Ready, !this.Ready);
-        
+
         if (Ready)
         {
             LobbyController.Instance.ReadyPlayerCount++;
             LobbyController.Instance.CheckIfAllReady();
         }
-        else if(!Ready)
+        else if (!Ready)
         {
             LobbyController.Instance.ReadyPlayerCount--;
             LobbyController.Instance.CheckIfAllReady();
@@ -70,7 +78,7 @@ public class PlayerListObjController : NetworkBehaviour
 
     public void ChangeReady()
     {
-        if (isLocalPlayer)
+        if (isOwned)
         {
             CmdSetPlayerReady();
         }
@@ -116,5 +124,4 @@ public class PlayerListObjController : NetworkBehaviour
             LobbyController.Instance.UpdatePlayerList();
         }
     }
-    
 }

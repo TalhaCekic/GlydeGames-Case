@@ -5,7 +5,7 @@ public class ObjDatas : NetworkBehaviour
 {
     public int maxValue = 100;
     public int currentValue;
-    public float playerPushForce = 500f;
+    float playerPushForce = 80f;
     public float impactThreshold = 10f;
 
     private void Start()
