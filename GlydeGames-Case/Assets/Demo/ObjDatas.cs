@@ -5,27 +5,29 @@ using UnityEngine;
 public class ObjDatas : NetworkBehaviour
 {
     public int maxValue = 100;
+
+    [SyncVar(hook = nameof(OnCurrentValueChanged))]
     public int currentValue;
+
     float playerPushForce = 80f;
     public float impactThreshold = 10f;
 
     public TMP_Text valueText;
-    private void Start()
-    {
-        ServerStart();
-    }
 
-    [Server]
-    private void ServerStart()
-    {
-        ClientStart();
-    }
-
-    [ClientRpc]
-    private void ClientStart()
+    public override void OnStartServer()
     {
         currentValue = maxValue;
-        valueText.text = maxValue.ToString();
+    }
+
+    private void OnCurrentValueChanged(int oldValue, int newValue)
+    {
+        valueText.text = newValue.ToString();
+    }
+
+    private void Start()
+    {
+        // Ýlk deðer atamasý için (client'ta hook tetiklenir)
+        valueText.text = currentValue.ToString();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -33,15 +35,11 @@ public class ObjDatas : NetworkBehaviour
         if (!isServer) return;
 
         float impactForce = collision.relativeVelocity.magnitude;
-        print($"Çarpma hýzý: {impactForce}");
-
         if (impactForce >= impactThreshold)
         {
             int damage = Mathf.RoundToInt(impactForce);
             currentValue -= damage;
             currentValue = Mathf.Clamp(currentValue, 0, maxValue);
-            RpcUpdateValueText();
-            Debug.Log($"Objeye çarpma oldu! Hasar: {damage}, Kalan Deðer: {currentValue}");
 
             if (collision.collider.CompareTag("Player"))
             {
@@ -50,24 +48,14 @@ public class ObjDatas : NetworkBehaviour
                 {
                     Vector3 pushDirection = collision.contacts[0].normal;
                     RpcPushPlayer(playerNetId.netId, -pushDirection * playerPushForce);
-                    Debug.Log("Oyuncu geri itildi (RPC ile)!");
                 }
             }
         }
-        else
-        {
-            Debug.Log($"Çarpma hýzý ({impactForce}) eþik deðerin altýnda, iþlem yapýlmadý.");
-        }
     }
-    [ClientRpc]
-    private void RpcUpdateValueText()
-    {
-        valueText.text = currentValue.ToString();
-    }
+
     [ClientRpc]
     private void RpcPushPlayer(uint playerNetId, Vector3 force)
     {
-        // Sadece ilgili oyuncunun Rigidbody'sine kuvvet uygula
         foreach (var identity in FindObjectsOfType<NetworkIdentity>())
         {
             if (identity.netId == playerNetId)
