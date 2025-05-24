@@ -419,7 +419,7 @@ MonoBehaviour:
   maxValue: 100
   currentValue: 0
   playerPushForce: 500
-  impactThreshold: 10
+  impactThreshold: 1
 --- !u!65 &1025505488
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -966,7 +966,7 @@ MonoBehaviour:
   maxValue: 100
   currentValue: 0
   playerPushForce: 500
-  impactThreshold: 10
+  impactThreshold: 1
 --- !u!65 &2086723679
 BoxCollider:
   m_ObjectHideFlags: 0
