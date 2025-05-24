@@ -21,7 +21,7 @@ namespace Player.PlayerMenu
         private Button _settingsButtom;
         private Button _mainMenuButton;
 
-        bool mouseActivity;
+        public bool mouseActivity;
         public override void OnStartServer()
         {
             if(!isLocalPlayer)return;

@@ -37,8 +37,8 @@ namespace Player.PlayerControl
         [SyncVar] private int _crouchHash;
         [SyncVar] private float _xRotation;
 
-        private const float _walkSpeed = 4f;
-        private const float _runSpeed = 7f;
+        private const float _walkSpeed = 30f;
+        private const float _runSpeed = 45f;
         private Vector3 _currentVelocity;
 
         public PlayerInteract playerInteract;
@@ -113,18 +113,11 @@ namespace Player.PlayerControl
 
             if (isLocalPlayer)
             {
-
-                //_currentVelocity.x = 0;
-                //_currentVelocity.y = 0;
-
-                //_animator.SetFloat(_yVelHash, _currentVelocity.y);
-                //_animator.SetFloat(_xVelHash, _currentVelocity.x);
+                if (playerMenuManager.mouseActivity) return;
                 SampleGround();
-                move();
+                Move();
                 HandleJump();
-                //HandleCrouch();
                 CamMovements();
-
             }
         }
 
@@ -153,33 +146,37 @@ namespace Player.PlayerControl
 
 
 
-        private void move()
+        private void Move()
         {
             if (!_hasAnimator) return;
 
-            float targetSpeed = _inputManager.Run ? _runSpeed * Time.deltaTime : _walkSpeed * Time.deltaTime;
-            //if (_inputManager.Crouch) targetSpeed = 1.5f;
+            float targetSpeed = _inputManager.Run ? _runSpeed : _walkSpeed;
+            if (_inputManager.Crouch) targetSpeed = 1.5f;
             if (_inputManager.Move == Vector2.zero) targetSpeed = 0;
 
-            _currentVelocity.x = _inputManager.Move.y * targetSpeed;
-            _currentVelocity.z = _inputManager.Move.x * targetSpeed;
+            if (_grounded)
+            {
+                _currentVelocity.x = Mathf.Lerp(_currentVelocity.x, _inputManager.Move.x * targetSpeed,
+                    AnimBlendSpeed * Time.deltaTime);
+                _currentVelocity.y = Mathf.Lerp(_currentVelocity.y, _inputManager.Move.y * targetSpeed,
+                    AnimBlendSpeed * Time.deltaTime);
 
-            Vector3 move = transform.right * _inputManager.Move.x + transform.forward * _inputManager.Move.y;
-            Move(targetSpeed, move, _currentVelocity);
-        }
+                var xVelDifference = _currentVelocity.x - _playerRigidbody.velocity.x;
+                var zVelDifference = _currentVelocity.y - _playerRigidbody.velocity.z;
 
-        [Command]
-        private void Move(float targetSpeed, Vector3 move, Vector3 _currentVelocity)
-        {
-            MoveRpc(targetSpeed, move, _currentVelocity);
-        }
+                _playerRigidbody.AddForce(transform.TransformVector(new Vector3(xVelDifference, 0, zVelDifference)),
+                    ForceMode.Force);
+            }
+            else
+            {
+                _playerRigidbody.AddForce(
+                    transform.TransformVector(new Vector3(_currentVelocity.x * AirResistance, 0,
+                        _currentVelocity.y * AirResistance)), ForceMode.Force);
+            }
 
-        [ClientRpc]
-        private void MoveRpc(float targetSpeed, Vector3 move, Vector3 _currentVelocity)
-        {
-            CharacterController.Move(move * targetSpeed);
-            _animator.SetFloat(_xVelHash, _currentVelocity.z * AnimBlendSpeed);
-            _animator.SetFloat(_yVelHash, _currentVelocity.x * AnimBlendSpeed);
+
+            _animator.SetFloat(_xVelHash, _currentVelocity.x);
+            _animator.SetFloat(_yVelHash, _currentVelocity.y);
         }
 
 
