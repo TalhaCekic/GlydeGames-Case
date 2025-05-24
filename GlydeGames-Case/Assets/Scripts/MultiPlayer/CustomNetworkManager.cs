@@ -53,18 +53,11 @@ public class CustomNetworkManager : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
-        if (SceneManager.GetActiveScene().buildIndex == 0)
+        if (conn.identity != null)
         {
-            if (GamePlayerDataInstance != null)
-            {
-                NetworkServer.RemovePlayerForConnection(conn, GamePlayerDataInstance.gameObject);
-            }
+            //NetworkServer.RemovePlayerForConnection(conn, conn.identity.gameObject);
         }
-        else
-        {
-            NetworkServer.RemovePlayerForConnection(conn, playerPrefab);
-        }
-        
+        base.OnServerDisconnect(conn); // Mirror'ýn kendi iþlemlerini de çaðýrýn
     }
 
     public override void OnServerChangeScene(string a)

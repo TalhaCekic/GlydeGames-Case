@@ -44,7 +44,6 @@ public class LobbyController : NetworkBehaviour
             {
                 return manager;
             }
-
             return manager = CustomNetworkManager.singleton as CustomNetworkManager;
         }
     }
@@ -53,12 +52,10 @@ public class LobbyController : NetworkBehaviour
     {
         Instance = this;
     }
-
     public void InvitePlayer()
     {
         steamLobby.InviteButton();
     }
-
     public void ReadyPlayer()
     {
         LocalPlayerController.ChangeReady();
@@ -70,16 +67,19 @@ public class LobbyController : NetworkBehaviour
         {
             MainMenuCanvas.instance.ReadyButton.text = ReadyString;
             MainMenuCanvas.instance.ReadyButton.style.color = Color.green;
+            //ReadyButtonText.text = UnreadyString;
         }
         else
         {
             MainMenuCanvas.instance.ReadyButton.text = UnreadyString;
             MainMenuCanvas.instance.ReadyButton.style.color = Color.red;
+            // ReadyButtonText.text = ReadyString;
         }
     }
 
     public void CheckIfAllReady()
     {
+        // bool AllReady = false;
         if (PlayerListItem.Count == ReadyPlayerCount)
         {
             AllReady = true;
@@ -105,8 +105,9 @@ public class LobbyController : NetworkBehaviour
         if (AllReady)
         {
             nextDelay += Time.deltaTime;
-            if (nextDelay > 2)
+            if (nextDelay > 3)
             {
+                //RpcStateReadySceneNextScene();
                 SteamLobby.instance.NextScene();
                 if (nextDelay > 6f)
                 {
@@ -171,7 +172,6 @@ public class LobbyController : NetworkBehaviour
 
             PlayerListItem.Add(NewPlayerItemScript);
         }
-
         PlayerItemCreated = true;
     }
 
@@ -213,7 +213,6 @@ public class LobbyController : NetworkBehaviour
                     PlayerLisItemScript.isReady = player.Ready;
 
                     PlayerLisItemScript.SetPlayerValues();
-                    if (!isClient) return;
                     UpdateButton();
                 }
             }
@@ -222,33 +221,35 @@ public class LobbyController : NetworkBehaviour
 
     public void RemovePlayerItem()
     {
-        List<PlayerListItem> playerListItemToRemove = new List<PlayerListItem>();
-
-        foreach (PlayerListItem playerList in PlayerListItem)
+        if (SceneManager.GetActiveScene().buildIndex == 0)
         {
-            if (!Manager.GamePlayers.Any(b => b.ConnectionID == playerList.ConnectionID))
-            {
-                playerListItemToRemove.Add(playerList);
-            }
-        }
+            List<PlayerListItem> playerListItemToRemove = new List<PlayerListItem>();
 
-        if (playerListItemToRemove.Count > 0)
-        {
-            foreach (PlayerListItem PlayerListItemRemove in playerListItemToRemove)
+            foreach (PlayerListItem playerList in PlayerListItem)
             {
-                GameObject ObjectToRemove = PlayerListItemRemove.gameObject;
-                //PlayerListItemRemove.isReady = false;
-                if (PlayerListItemRemove.isReady)
+                if (!Manager.GamePlayers.Any(b => b.ConnectionID == playerList.ConnectionID))
                 {
-                    ReadyPlayerCount--;
+                    playerListItemToRemove.Add(playerList);
                 }
+            }
 
-                //print(PlayerListItemRemove.isReady);
-                //CheckIfAllReady();
-                //ReadyPlayer();
-                PlayerListItem.Remove(PlayerListItemRemove);
-                Destroy(ObjectToRemove);
-                ObjectToRemove = null;
+            if (playerListItemToRemove.Count > 0)
+            {
+                foreach (PlayerListItem PlayerListItemRemove in playerListItemToRemove)
+                {
+                    GameObject ObjectToRemove = PlayerListItemRemove.gameObject;
+                    //PlayerListItemRemove.isReady = false;
+                    if (PlayerListItemRemove.isReady)
+                    {
+                        ReadyPlayerCount--;
+                    }
+                    //print(PlayerListItemRemove.isReady);
+                    //CheckIfAllReady();
+                    //ReadyPlayer();
+                    PlayerListItem.Remove(PlayerListItemRemove);
+                    Destroy(ObjectToRemove);
+                    ObjectToRemove = null;
+                }
             }
         }
     }
